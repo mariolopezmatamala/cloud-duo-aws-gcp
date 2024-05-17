@@ -31,32 +31,7 @@ def detect_language(text):
         print("Error al detectar el idioma:", e)
         raise
 
-def translate_text(text, source_lang, target_lang):
-    """
-    Traduce el texto de un idioma de origen a un idioma de destino utilizando AWS Translate.
-
-    Parámetros:
-    - text: Texto a traducir.
-    - source_lang: Idioma de origen.
-    - target_lang: Idioma de destino.
-
-    Devuelve:
-    - Texto traducido.
-    - En caso de error, se maneja la excepción y se eleva.
-    """
-    try:
-        translation_response = translate.translate_text(
-            Text=text,
-            SourceLanguageCode=source_lang,
-            TargetLanguageCode=target_lang
-        )
-        translated_text = translation_response['TranslatedText']
-        return translated_text
-    except Exception as e:
-        print("Error al traducir el texto:", e)
-        raise
-
-def translate_content(columnas_por_pagina):
+def translate_content(text):
     """
     Traduce el contenido de las páginas si está mayoritariamente en inglés.
 
@@ -67,19 +42,20 @@ def translate_content(columnas_por_pagina):
     - Diccionario con el contenido traducido.
     - En caso de error, se maneja la excepción y se eleva.
     """
-    translated_columnas_por_pagina = {}
-    for page_number, page_content in columnas_por_pagina.items():
-        content = page_content['Content']
-        try:
-            dominant_language = detect_language(content)
-            if dominant_language == 'en':
-                translated_content = translate_text(content, 'en', 'es')
-                page_content['Content'] = translated_content
-            translated_columnas_por_pagina[page_number] = page_content
-        except Exception as e:
-            print("Error al traducir el contenido de la página:", e)
-            raise
-    return translated_columnas_por_pagina
+    try:
+        language_code=detect_language(text)
+        if language_code != 'es':
+            translation_response = translate.translate_text(
+                Text=text,
+                SourceLanguageCode=language_code,
+                TargetLanguageCode='es'
+            )
+            translated_text = translation_response['TranslatedText']
+            return translated_text
+        return text
+
+    except Exception as e:
+        print("Error al traducir el texto: ", e)
 
 def lambda_handler(event, context):
     """
@@ -101,15 +77,13 @@ def lambda_handler(event, context):
             job_id =  message["JobId"]
             print("el job id es:", job_id)
         
-            columnas_por_pagina=process_response(job_id)
+            extracted_text=process_response(job_id)
             
-            
-            translated_columnas_por_pagina = translate_content(columnas_por_pagina)
+            es_text = translate_content(extracted_text)
             
             with open("/tmp/file.txt", "w") as f:
-                for page_number, page_content in translated_columnas_por_pagina.items():
-                    content = page_content['Content']
-                    f.write(f"Page {page_number}:\n{content}\n\n")
+                f.write(es_text)
+                
             s3_response = s3.upload_file("/tmp/file.txt", bucket_name, "resultados-textract/" + job_id + ".txt")
 
             return {"statusCode": 200, "body": json.dumps("File uploaded successfully!")}
@@ -140,16 +114,16 @@ def process_response(job_id):
     pages.append(response)
     
     if "NextToken" in response:
-        nextToken = response["NextToken"]
+        next_token = response["NextToken"]
 
-    while nextToken:
+    while next_token:
         response = textract.get_document_text_detection(
-            JobId=job_id, NextToken=nextToken
+            JobId=job_id, NextToken=next_token
         )
         pages.append(response)
-        nextToken = None
+        next_token = None
         if "NextToken" in response:
-            nextToken = response["NextToken"]
+            next_token = response["NextToken"]
 
     columnas_por_pagina  = {}
     
@@ -170,15 +144,9 @@ def process_response(job_id):
                 columnas_por_pagina[page_number][columna].append(item["Text"])
 
     combined_text = combinar_columnas(columnas_por_pagina)
-    
-    extracted_text = {}
-    
-    for page_number, text in combined_text.items():
-        extracted_text[page_number] = {
-            "Number": page_number,
-            "Content": "".join(text)
-        }
-
+       
+    extracted_text = " ".join(combined_text).replace("&&n", "\n")
+        
     return extracted_text
     
 def combinar_columnas(columnas_por_pagina):
@@ -189,12 +157,15 @@ def combinar_columnas(columnas_por_pagina):
     - columnas_por_pagina: Diccionario con el contenido de las páginas.
 
     Devuelve:
-    - Diccionario con el texto combinado de cada página.
+    - Lista con el texto combinado de cada página, junto en una lista.
     """
-    texto_combinado = {}
+    texto_listas = []
     for pagina, columnas in columnas_por_pagina.items():
         texto_izquierda = columnas['izquierda']
         texto_derecha = columnas['derecha']
-        texto_combinado[pagina] = texto_izquierda + texto_derecha
-    return texto_combinado
+        
+        texto_listas.extend(texto_izquierda + texto_derecha)
+        
+
+    return texto_listas
 
