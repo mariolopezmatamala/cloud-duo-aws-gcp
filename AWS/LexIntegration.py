@@ -16,6 +16,8 @@ def lambda_handler(event, context):
         return startTutorial()
     elif intent_name == 'NextStep':
         return nextStep(event)
+    elif intent_name=='RepeatStep':
+        return currentStep(event)
     
 def startTutorial():
     session_attributes = {'step':0,'substep':1}
@@ -54,6 +56,20 @@ def nextStep(event):
         return create_lambda_functions(session_attributes)
     else:
         return finTutorial()
+
+def currentStep(event):
+    session_attributes = event['sessionState'].get('sessionAttributes', {})
+    step = int(session_attributes.get('step', 1))
+    substep = int(session_attributes.get('substep', 1))
+    
+    if step == 1:
+        return rol_IAM(session_attributes)
+    elif step == 2:
+        return bucket_S3(session_attributes)
+    elif step == 3:
+        return create_SNS(session_attributes)
+    elif step == 4:
+        return create_lambda_functions(session_attributes) 
 
 def rol_IAM(session_attributes):    
    
