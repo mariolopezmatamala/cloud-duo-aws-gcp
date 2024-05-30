@@ -20,6 +20,8 @@ def lambda_handler(event, context):
         return currentStep(event)
     elif intent_name == 'GoToStep':
         return goToStep(event)
+    elif intent_name == 'AskQuestion':
+        return handleQuestion(event)
     
 def startTutorial():
     session_attributes = {'step':0,'substep':1}
@@ -151,6 +153,106 @@ def read_text_file_from_s3(file_name):
     except Exception as e:
         print(f"Error al leer el archivo desde S3: {e}")
         return None
+
+def handleQuestion(event):
+    session_attributes = event['sessionState'].get('sessionAttributes', {})
+    step = int(session_attributes.get('step', 1))
+    question = event['inputTranscript'].lower()
+    value = event['sessionState']['intent']['slots']['Question']['value']['resolvedValues'][0]
+    
+    if value == 'IAM' and step == 1:
+        response = handleQuestionIAM(question)
+    elif step == 'S3' and step == 2:
+        response = handleQuestionS3(question)
+    elif step == 'SNS' and step == 3:
+        response = handleQuestionSNS(question)
+    elif step == 'Lambda' and step == 4:
+        response = handleQuestionLambda(question)
+    else: response = "Haz una pregunta correspondiente al paso en el que estamos, no te adelantes."
+    return build_response(response, session_attributes, 'AskQuestion')
+
+def handleQuestionIAM(question):
+    phrases_list = [
+        "qué es", 
+        "explícame", 
+        "para qué sirve", 
+        "quiero saber sobre", 
+        "definición de", 
+        "qué significa"
+    ]
+    if any(phrase in question for phrase in phrases_list):
+        return "Un rol IAM es una entidad que define un conjunto de permisos para realizar acciones en AWS. Un rol no está asociado a un usuario o grupo específico y puede ser asumido por cualquier entidad que necesite los permisos definidos."
+    elif "creo" in question:
+        return "Para crear un rol en IAM, accede al servicio IAM en la consola de AWS, selecciona 'Roles' y haz clic en 'Create role'. Luego, sigue los pasos para definir la entidad de confianza y asignar permisos."
+    else:
+        return "No tengo información sobre esa pregunta específica en este paso. Por favor, pregunta algo relacionado con la creación del rol IAM."
+
+def handleQuestionS3(question):
+    phrases_list = [
+        "qué es", 
+        "explícame", 
+        "para qué sirve", 
+        "quiero saber sobre", 
+        "definición de", 
+        "qué significa"
+    ]
+    if any(phrase in question for phrase in phrases_list):
+        return "Un bucket S3 es un contenedor de objetos en Amazon S3 (Simple Storage Service). Puedes almacenar cualquier número de objetos en un bucket."
+    elif "creo" in question:
+        return "Para crear un bucket en S3, accede al servicio Amazon S3 en la consola de AWS, haz clic en 'Create bucket', elige un nombre único y configura las opciones según tus necesidades."
+    elif "carpetas" in question:
+        return "Las carpetas en S3 son una manera de organizar los objetos dentro de un bucket. Aunque S3 es un almacenamiento plano, las carpetas se utilizan para simular una estructura jerárquica."
+    elif "creo carpetas" in question:
+        return "Para crear carpetas en S3, accede a tu bucket, selecciona 'Create folder', ingresa el nombre de la carpeta y guarda los cambios."
+    elif "configuración más segura" in question:
+        return "La configuración más segura para un bucket S3 implica habilitar el cifrado de objetos, restringir el acceso público, habilitar el registro de acceso y aplicar políticas de acceso específicas."
+    else:
+        return "No tengo información sobre esa pregunta específica en este paso. Por favor, pregunta algo relacionado con la creación del bucket S3."
+
+def handleQuestionSNS(question):
+    phrases_list = [
+        "qué es", 
+        "explícame", 
+        "para qué sirve", 
+        "quiero saber sobre", 
+        "definición de", 
+        "qué significa"
+    ]
+    if any(phrase in question for phrase in phrases_list):
+        return "SNS (Simple Notification Service) es un servicio de mensajería de AWS que coordina y administra la entrega o el envío de notificaciones a suscriptores o endpoints."
+    elif "creo" in question:
+        return "Para crear un tema en SNS, accede al servicio SNS en la consola de AWS, haz clic en 'Create topic', elige un nombre y tipo de tema, y configura las opciones."
+    elif "tema estándar" in question:
+        return "Un tema estándar en SNS permite el envío de mensajes a múltiples suscriptores con un mecanismo de entrega 'al menos una vez' (at least once) y sin orden de entrega garantizado."
+    elif "endpoint" in question:
+        return "Un endpoint en SNS es un destino al que se envían los mensajes, como una dirección de correo electrónico, un número de teléfono (para SMS) o una URL HTTP/S."
+    elif "suscribir los endpoints a un tema" in question:
+        return "Para suscribir endpoints a un tema de SNS, accede al tema, selecciona 'Create subscription', elige el protocolo (email, SMS, HTTP, etc.) y proporciona el endpoint."
+    else:
+        return "No tengo información sobre esa pregunta específica en este paso. Por favor, pregunta algo relacionado con la creación de un tema en SNS."
+
+def handleQuestionLambda(question):
+    phrases_list = [
+        "qué es", 
+        "explícame", 
+        "para qué sirve", 
+        "quiero saber sobre", 
+        "definición de", 
+        "qué significa"
+    ]
+    
+    if any(phrase in question for phrase in phrases_list):
+        return "AWS Lambda es un servicio de computación sin servidor que ejecuta código en respuesta a eventos y administra automáticamente los recursos de computación."
+    elif "creo" in question:
+        return "Para crear una función Lambda, accede al servicio Lambda en la consola de AWS, haz clic en 'Create function', elige crear desde cero, proporciona un nombre y elige el tiempo de ejecución (como Python), luego configura los permisos."
+    elif "desencadenador" in question:
+        return "Un desencadenador (trigger) es una fuente de eventos que invoca la función Lambda. Puede ser un bucket S3, un tema SNS, una tabla DynamoDB, entre otros."
+    elif "configurar un desencadenador s3" in question:
+        return "Para configurar un desencadenador S3, accede a la función Lambda, selecciona 'Add trigger', elige S3, especifica el bucket y los filtros de prefijo y sufijo, y guarda los cambios."
+    elif "tiempo de espera" in question:
+        return "El tiempo de espera (timeout) en Lambda define el tiempo máximo que una función puede ejecutarse antes de ser terminada por el servicio. Puedes configurar este tiempo según las necesidades de tu función."
+    else:
+        return "No tengo información sobre esa pregunta específica en este paso. Por favor, pregunta algo relacionado con la creación de las funciones Lambda."
 
 def build_response(message, session_attributes, intent_name,content_type='CustomPayload'):
     response = {
