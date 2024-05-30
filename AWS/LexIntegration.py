@@ -18,6 +18,8 @@ def lambda_handler(event, context):
         return nextStep(event)
     elif intent_name=='RepeatStep':
         return currentStep(event)
+    elif intent_name == 'GoToStep':
+        return goToStep(event)
     
 def startTutorial():
     session_attributes = {'step':0,'substep':1}
@@ -70,6 +72,26 @@ def currentStep(event):
         return create_SNS(session_attributes)
     elif step == 4:
         return create_lambda_functions(session_attributes) 
+
+def goToStep(event):
+    session_attributes = event['sessionState'].get('sessionAttributes', {})
+    step = int(event['sessionState']['intent']['slots']['StepNumber']['value']['interpretedValue'])
+    
+    if step < 1 or step > 4:
+        message = "Lo siento, el paso especificado no es válido. Por favor, elige un paso entre 1 y 4."
+        return build_response(message, session_attributes, 'GoToStep')
+    
+    session_attributes['step'] = step
+    session_attributes['substep'] = 1
+    
+    if step == 1:
+        return rol_IAM(session_attributes)
+    elif step == 2:
+        return bucket_S3(session_attributes)
+    elif step == 3:
+        return create_SNS(session_attributes)
+    elif step == 4:
+        return create_lambda_functions(session_attributes)
 
 def rol_IAM(session_attributes):    
    
