@@ -39,6 +39,9 @@ def dialogflow_webhook(request):
             return current_step(session_attributes, session)
         elif intent_name == 'GoToStep':
             return go_to_step(session_attributes, session)
+        elif intent_name in ['CreacionStorage', 'CreacionDocumentAI', 'CreacionFunctions', 'CreacionDialogFlow', 'CreacionTask']:
+            user_input = request_json['queryResult']['queryText']
+            return handle_question(intent_name,session_attributes,user_input, session)
         else:
             message = "No puedo manejar esa solicitud en este momento."
             return build_response(message, session, session_attributes)
@@ -65,7 +68,6 @@ def start_tutorial(session):
         """  
     return build_response(message, session, session_attributes)
 
-
 def get_step_content(step, substep):
     """
     Obtiene el contenido del paso y subpaso actuales desde Firestore.
@@ -86,6 +88,7 @@ def get_step_content(step, substep):
     except Exception as e:
         print(f"Error al obtener contenido desde Firestore: {e}")
         return "Ocurrió un error al obtener el contenido del paso."
+
 
 def next_step(session_attributes, session):
     """
@@ -159,11 +162,69 @@ def go_to_step(session_attributes, session):
     file_name = get_step_content(step, 1)
 
     message = read_text_from_file(file_name)
-   
+    
     return build_response(message, session, session_attributes)
 
 
+def handle_question(intent_name, session_attributes, user_input, session):
+    """
+    Maneja las preguntas específicas del usuario durante el tutorial.
 
+    Parámetros:
+    - intent_name: El nombre de la intención que contiene la pregunta.
+    - session_attributes: Los atributos de la sesión actuales.
+    - user_input: La pregunta realizada por el usuario.
+
+    Retorna:
+    - Un diccionario con la respuesta a la pregunta del usuario y los atributos de la sesión.
+    """
+    response_message = get_most_similar_response(intent_name, user_input)
+    return build_response(response_message, session, session_attributes)
+
+def get_most_similar_response(intent_name, user_input):
+    """
+    Busca la respuesta más similar a la pregunta del usuario en Firestore.
+
+    Parámetros:
+    - intent_name: El nombre de la intención que contiene la pregunta.
+    - user_input: La pregunta realizada por el usuario.
+
+    Retorna:
+    - La respuesta más similar encontrada en Firestore o un mensaje de error si no se encuentra una respuesta.
+    """
+    try:
+        docs = db.collection("chatbotresponses").where('IntentName', '==', intent_name).stream()
+
+        max_similarity = -1
+        best_response = "Lo siento, no tengo la respuesta a esa pregunta en este momento."
+        for doc in docs:
+            item = doc.to_dict()
+            similarity = calculate_similarity(user_input, item['Question'])
+            if similarity > max_similarity:
+                max_similarity = similarity
+                best_response = item['Response']
+        
+        return best_response
+
+    except Exception as e:
+        print(f"Error al obtener la respuesta desde Firestore: {e}")
+        return "Lo siento, ocurrió un error al procesar tu solicitud."
+
+def calculate_similarity(user_input, stored_question):
+    """
+    Calcula la similitud entre la pregunta del usuario y las preguntas almacenadas.
+
+    Parámetros:
+    - user_input: La pregunta realizada por el usuario.
+    - stored_question: La pregunta almacenada en Firestore.
+
+    Retorna:
+    - Un valor de similitud basado en la cantidad de palabras comunes entre las preguntas.
+    """
+    user_words = set(user_input.lower().split())
+    question_words = set(stored_question.lower().split())
+    common_words = user_words.intersection(question_words)
+    return len(common_words) / max(len(user_words), len(question_words))
 
 def build_response(message, session, session_attributes):
     """
@@ -215,4 +276,3 @@ def read_text_from_file(file_name):
     except Exception as e:
         print(f"Error al leer el archivo desde Google Cloud Storage: {e}")
         return "Ocurrió un error al leer el archivo desde Google Cloud Storage."
-
