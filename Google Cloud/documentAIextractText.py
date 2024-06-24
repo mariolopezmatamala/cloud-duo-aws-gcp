@@ -54,10 +54,11 @@ def extract_text_and_save(data, context):
         if file_name.endswith('.pdf') and file_name.startswith(input_bucket):         
             content_uri = f"gs://{bucket_name}/{file_name}"
 
-            text = asyncio.run(process_pdf_async(content_uri))
-
-            if text:
-                guardar_texto_en_storage(text, file_name, bucket_name)
+            texto_extraido = asyncio.run(process_pdf_async(content_uri))
+            
+            if texto_extraido:
+                texto_unido = " ".join(texto_extraido.split()).replace("&&n", "\n")
+                guardar_texto_en_storage(texto_unido, file_name, bucket_name)
            
         else:
             print('No se realiza ninguna acción')
@@ -84,7 +85,7 @@ def guardar_texto_en_storage(texto, nombre_archivo, nombre_bucket):
 
         # Crear el blob de salida y subir el texto
         blob_salida = bucket.blob(nombre_archivo_salida)
-        blob_salida.upload_from_string(texto, content_type='text/plain')
+        blob_salida.upload_from_string(texto, content_type='text/plain; charset=utf-8')
         enviar_notificacion(nombre_archivo_salida)
         print(f'Texto extraído y guardado en gs://{nombre_bucket}/{nombre_archivo_salida}')
     except Exception as e:
