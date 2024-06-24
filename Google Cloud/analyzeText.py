@@ -15,7 +15,9 @@ def main(request):
         str: El idioma detectado del texto.
     '''
     try:
-        text = get_text_storage(request.data.decode("utf-8"))
+        document_location = request.data.decode("utf-8")
+        text = get_text_storage(document_location)
+        
 
         language = detect_language(text)
 
