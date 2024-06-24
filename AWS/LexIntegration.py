@@ -3,39 +3,93 @@ import boto3
 import os
 
 s3 = boto3.client('s3')
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('ChatbotResponses')
 bucket_name = os.environ['bucket_name']
 folder_name = os.environ['folder_name']
 
+
 def lambda_handler(event, context):
-    intent_name = event['sessionState']['intent']['name']
-            
-    print(event)
-    print(context)
+    """
+    Función principal de la Lambda que maneja las solicitudes entrantes de Lex.
     
+    Parámetros:
+    - event: El evento desencadenado por Lex, contiene detalles como la intención y los atributos de la sesión.
+    - context: Contexto de la ejecución de la Lambda.
+
+    Retorna:
+    - Un diccionario con la respuesta apropiada basada en la intención del usuario.
+    """
+    intent_name = event['sessionState']['intent']['name']
+    session_attributes = event["sessionState"]["sessionAttributes"]
+
     if intent_name == 'StartTutorial':
         return startTutorial()
     elif intent_name == 'NextStep':
         return nextStep(event)
-    elif intent_name=='RepeatStep':
+    elif intent_name == 'RepeatStep':
         return currentStep(event)
     elif intent_name == 'GoToStep':
         return goToStep(event)
-    elif intent_name == 'AskQuestion':
-        return handleQuestion(event)
+    elif intent_name in ['CreacionRolIAM', 'CreacionBucketS3', 'CrearSNS', 'CrearFuncionLambda', 'ExplicacionFuncionesLambda', 'Textract', 'ComprehendTranslate', 'Lex']:
+        return handle_question(event)
+    else:
+        message = "No puedo manejar esa solicitud en este momento."
+        return build_response(message, session_attributes, intent_name)
     
 def startTutorial():
-    session_attributes = {'step':0,'substep':1}
+    """
+    Inicia el tutorial configurando los atributos iniciales de la sesión y devolviendo un mensaje de bienvenida.
 
-    print("hola",session_attributes)
+    Parámetros:
+    - Ninguno.
+
+    Retorna:
+    - Un diccionario con el mensaje de bienvenida y los atributos de la sesión inicializados.
+    """
+    session_attributes = {'step': 0, 'substep': 1}
+
     message = """Te voy a ayudar a crear un chatBot. Estos van a ser los pasos, si quieres puedes ir a uno en concreto. 
         1 - Configuración del rol IAM.
         2 - Creación del bucket
         3 - Configuración de la notificación
         4 - Creación de las funciones lambda
     Además, siempre puedes hacerme alguna pregunta acerca del paso en el que estemos. ¿Estás preparado?"""
-    return build_response(message,session_attributes,'StartTutorial')
+    return build_response(message, session_attributes, 'StartTutorial')
+
+def get_step_content(step, substep):
+    """
+    Obtiene el fichero contenido a través del paso y subpaso actuales desde DynamoDB.
+
+    Parámetros:
+    - step: El paso actual del tutorial.
+    - substep: El subpaso actual dentro del paso.
+
+    Retorna:
+    - El nombre del fichero correspondiente al paso y subpaso desde DynamoDB, o un mensaje de error si no se encuentra el contenido.
+    """
+    try:
+        key = f"{step}_{substep}"
+        response = table.get_item(Key={'IntentName': 'tutorial', 'Question': key})
+        item = response.get('Item')
+        if not item:
+            return "No se encontró contenido para este paso y subpaso."
+        return item['Response']
+    except Exception as e:
+        print(f"Error al obtener contenido desde DynamoDB: {e}")
+        return "Ocurrió un error al obtener el contenido del paso."
+
 
 def nextStep(event):
+    """
+    Avanza al siguiente paso o subpaso del tutorial.
+
+    Parámetros:
+    - event: El evento desencadenado por Lex que contiene los atributos de la sesión.
+
+    Retorna:
+    - Un diccionario con el mensaje del siguiente paso o subpaso y los atributos de la sesión actualizados.
+    """
     step_substep = {0: 1, 1: 2, 2: 1, 3: 1, 4: 4}
     session_attributes = event['sessionState'].get('sessionAttributes', {})
     step = int(session_attributes.get('step', 1))
@@ -50,32 +104,42 @@ def nextStep(event):
     session_attributes['step'] = step
     session_attributes['substep'] = substep
     
-    if step == 1:
-        return rol_IAM(session_attributes)
-    elif step == 2:
-        return bucket_S3(session_attributes)
-    elif step == 3:
-        return create_SNS(session_attributes)
-    elif step == 4:
-        return create_lambda_functions(session_attributes)
-    else:
-        return finTutorial()
+    file_name = get_step_content(step, substep)
+    
+    message = read_text_file_from_s3(file_name)
+    
+    return build_response(message, session_attributes, 'NextStep')
 
 def currentStep(event):
+    """
+    Repite el contenido del paso y subpaso actuales.
+
+    Parámetros:
+    - event: El evento desencadenado por Lex que contiene los atributos de la sesión.
+
+    Retorna:
+    - Un diccionario con el mensaje del paso y subpaso actuales y los atributos de la sesión.
+    """
     session_attributes = event['sessionState'].get('sessionAttributes', {})
     step = int(session_attributes.get('step', 1))
     substep = int(session_attributes.get('substep', 1))
     
-    if step == 1:
-        return rol_IAM(session_attributes)
-    elif step == 2:
-        return bucket_S3(session_attributes)
-    elif step == 3:
-        return create_SNS(session_attributes)
-    elif step == 4:
-        return create_lambda_functions(session_attributes) 
+    file_name = get_step_content(step, substep)
+    
+    message = read_text_file_from_s3(file_name)
+    
+    return build_response(message, session_attributes, 'NextStep')
 
 def goToStep(event):
+    """
+    Salta a un paso específico del tutorial según la solicitud del usuario.
+
+    Parámetros:
+    - event: El evento desencadenado por Lex que contiene los atributos de la sesión y el número de paso deseado.
+
+    Retorna:
+    - Un diccionario con el mensaje del paso especificado y los atributos de la sesión actualizados.
+    """
     session_attributes = event['sessionState'].get('sessionAttributes', {})
     step = int(event['sessionState']['intent']['slots']['StepNumber']['value']['interpretedValue'])
     
@@ -86,175 +150,93 @@ def goToStep(event):
     session_attributes['step'] = step
     session_attributes['substep'] = 1
     
-    if step == 1:
-        return rol_IAM(session_attributes)
-    elif step == 2:
-        return bucket_S3(session_attributes)
-    elif step == 3:
-        return create_SNS(session_attributes)
-    elif step == 4:
-        return create_lambda_functions(session_attributes)
-
-def rol_IAM(session_attributes):    
-   
-    substep = int(session_attributes.get('substep', 1))
+    file_name = get_step_content(step, 1)
     
-    if substep == 1:
-        message = read_text_file_from_s3("Paso1Subpaso1.txt")
-        return build_response(message,session_attributes,'NextStep')
-        
-    elif substep == 2:
-            
-        message = read_text_file_from_s3("Paso1Subpaso2.txt")
-        return build_response(message,session_attributes,'NextStep')
-
-def bucket_S3(session_attributes):
-    message = read_text_file_from_s3("Paso2Subpaso1.txt")
+    message = read_text_file_from_s3(file_name)
     
-    return build_response(message,session_attributes,'NextStep')
+    return build_response(message, session_attributes, 'NextStep')
 
-def create_SNS(session_attributes):
-    message = read_text_file_from_s3("Paso3Subpaso1.txt")
-    return build_response(message, session_attributes, 'NextStep') 
-    
-def create_lambda_functions(session_attributes):
-    substep = int(session_attributes.get('substep', 1))
+def handle_question(event):
+    """
+    Maneja las preguntas específicas del usuario durante el tutorial.
 
-    if substep == 1:
-        message = read_text_file_from_s3("Paso4Subpaso1.txt")
-        
-        return build_response(message, session_attributes, 'NextStep')
+    Parámetros:
+    - event: El evento desencadenado por Lex que contiene los atributos de la sesión y la pregunta del usuario.
 
-    elif substep == 2:
-        message = read_text_file_from_s3("Paso4Subpaso2.txt")
-        
-        return build_response(message, session_attributes, 'NextStep')
-
-    elif substep == 3:
-        message = read_text_file_from_s3("Paso4Subpaso3.txt")
-        
-        return build_response(message, session_attributes, 'NextStep')
-
-    elif substep == 4:
-        message = read_text_file_from_s3("Paso4Subpaso4.txt")        
-        return build_response(message, session_attributes, 'NextStep')
-
-def finTutorial():
-    message = "Enhorabuena, has creado un chatbot"
-    return build_response(message, {}, 'NextStep')
-
-def read_text_file_from_s3(file_name):
-    
-    try:
-        response = s3.get_object(Bucket=bucket_name, Key=f"{folder_name}/{file_name}")
-        text = response['Body'].read().decode('utf-8')
-        print(text)
-        return text
-    except Exception as e:
-        print(f"Error al leer el archivo desde S3: {e}")
-        return None
-
-def handleQuestion(event):
+    Retorna:
+    - Un diccionario con la respuesta a la pregunta del usuario y los atributos de la sesión.
+    """
+    intent_name = event['sessionState']['intent']['name']
+    user_input = event['inputTranscript']
     session_attributes = event['sessionState'].get('sessionAttributes', {})
-    step = int(session_attributes.get('step', 1))
-    question = event['inputTranscript'].lower()
-    value = event['sessionState']['intent']['slots']['Question']['value']['resolvedValues'][0]
     
-    if value == 'IAM' and step == 1:
-        response = handleQuestionIAM(question)
-    elif step == 'S3' and step == 2:
-        response = handleQuestionS3(question)
-    elif step == 'SNS' and step == 3:
-        response = handleQuestionSNS(question)
-    elif step == 'Lambda' and step == 4:
-        response = handleQuestionLambda(question)
-    else: response = "Haz una pregunta correspondiente al paso en el que estamos, no te adelantes."
-    return build_response(response, session_attributes, 'AskQuestion')
-
-def handleQuestionIAM(question):
-    phrases_list = [
-        "qué es", 
-        "explícame", 
-        "para qué sirve", 
-        "quiero saber sobre", 
-        "definición de", 
-        "qué significa"
-    ]
-    if any(phrase in question for phrase in phrases_list):
-        return "Un rol IAM es una entidad que define un conjunto de permisos para realizar acciones en AWS. Un rol no está asociado a un usuario o grupo específico y puede ser asumido por cualquier entidad que necesite los permisos definidos."
-    elif "creo" in question:
-        return "Para crear un rol en IAM, accede al servicio IAM en la consola de AWS, selecciona 'Roles' y haz clic en 'Create role'. Luego, sigue los pasos para definir la entidad de confianza y asignar permisos."
-    else:
-        return "No tengo información sobre esa pregunta específica en este paso. Por favor, pregunta algo relacionado con la creación del rol IAM."
-
-def handleQuestionS3(question):
-    phrases_list = [
-        "qué es", 
-        "explícame", 
-        "para qué sirve", 
-        "quiero saber sobre", 
-        "definición de", 
-        "qué significa"
-    ]
-    if any(phrase in question for phrase in phrases_list):
-        return "Un bucket S3 es un contenedor de objetos en Amazon S3 (Simple Storage Service). Puedes almacenar cualquier número de objetos en un bucket."
-    elif "creo" in question:
-        return "Para crear un bucket en S3, accede al servicio Amazon S3 en la consola de AWS, haz clic en 'Create bucket', elige un nombre único y configura las opciones según tus necesidades."
-    elif "carpetas" in question:
-        return "Las carpetas en S3 son una manera de organizar los objetos dentro de un bucket. Aunque S3 es un almacenamiento plano, las carpetas se utilizan para simular una estructura jerárquica."
-    elif "creo carpetas" in question:
-        return "Para crear carpetas en S3, accede a tu bucket, selecciona 'Create folder', ingresa el nombre de la carpeta y guarda los cambios."
-    elif "configuración más segura" in question:
-        return "La configuración más segura para un bucket S3 implica habilitar el cifrado de objetos, restringir el acceso público, habilitar el registro de acceso y aplicar políticas de acceso específicas."
-    else:
-        return "No tengo información sobre esa pregunta específica en este paso. Por favor, pregunta algo relacionado con la creación del bucket S3."
-
-def handleQuestionSNS(question):
-    phrases_list = [
-        "qué es", 
-        "explícame", 
-        "para qué sirve", 
-        "quiero saber sobre", 
-        "definición de", 
-        "qué significa"
-    ]
-    if any(phrase in question for phrase in phrases_list):
-        return "SNS (Simple Notification Service) es un servicio de mensajería de AWS que coordina y administra la entrega o el envío de notificaciones a suscriptores o endpoints."
-    elif "creo" in question:
-        return "Para crear un tema en SNS, accede al servicio SNS en la consola de AWS, haz clic en 'Create topic', elige un nombre y tipo de tema, y configura las opciones."
-    elif "tema estándar" in question:
-        return "Un tema estándar en SNS permite el envío de mensajes a múltiples suscriptores con un mecanismo de entrega 'al menos una vez' (at least once) y sin orden de entrega garantizado."
-    elif "endpoint" in question:
-        return "Un endpoint en SNS es un destino al que se envían los mensajes, como una dirección de correo electrónico, un número de teléfono (para SMS) o una URL HTTP/S."
-    elif "suscribir los endpoints a un tema" in question:
-        return "Para suscribir endpoints a un tema de SNS, accede al tema, selecciona 'Create subscription', elige el protocolo (email, SMS, HTTP, etc.) y proporciona el endpoint."
-    else:
-        return "No tengo información sobre esa pregunta específica en este paso. Por favor, pregunta algo relacionado con la creación de un tema en SNS."
-
-def handleQuestionLambda(question):
-    phrases_list = [
-        "qué es", 
-        "explícame", 
-        "para qué sirve", 
-        "quiero saber sobre", 
-        "definición de", 
-        "qué significa"
-    ]
+    response_message = get_most_similar_response(intent_name, user_input)
     
-    if any(phrase in question for phrase in phrases_list):
-        return "AWS Lambda es un servicio de computación sin servidor que ejecuta código en respuesta a eventos y administra automáticamente los recursos de computación."
-    elif "creo" in question:
-        return "Para crear una función Lambda, accede al servicio Lambda en la consola de AWS, haz clic en 'Create function', elige crear desde cero, proporciona un nombre y elige el tiempo de ejecución (como Python), luego configura los permisos."
-    elif "desencadenador" in question:
-        return "Un desencadenador (trigger) es una fuente de eventos que invoca la función Lambda. Puede ser un bucket S3, un tema SNS, una tabla DynamoDB, entre otros."
-    elif "configurar un desencadenador s3" in question:
-        return "Para configurar un desencadenador S3, accede a la función Lambda, selecciona 'Add trigger', elige S3, especifica el bucket y los filtros de prefijo y sufijo, y guarda los cambios."
-    elif "tiempo de espera" in question:
-        return "El tiempo de espera (timeout) en Lambda define el tiempo máximo que una función puede ejecutarse antes de ser terminada por el servicio. Puedes configurar este tiempo según las necesidades de tu función."
-    else:
-        return "No tengo información sobre esa pregunta específica en este paso. Por favor, pregunta algo relacionado con la creación de las funciones Lambda."
+    return build_response(response_message, session_attributes, intent_name)
 
-def build_response(message, session_attributes, intent_name,content_type='CustomPayload'):
+def get_most_similar_response(intent_name, user_input):
+    """
+    Busca la respuesta más similar a la pregunta del usuario en DynamoDB.
+
+    Parámetros:
+    - intent_name: El nombre de la intención que contiene la pregunta.
+    - user_input: La pregunta realizada por el usuario.
+
+    Retorna:
+    - La respuesta más similar encontrada en DynamoDB o un mensaje de error si no se encuentra una respuesta.
+    """
+    try:
+        response = table.query(
+            KeyConditionExpression=boto3.dynamodb.conditions.Key('IntentName').eq(intent_name)
+        )
+
+        items = response.get('Items', [])
+        if not items:
+            return "Lo siento, no tengo la respuesta a esa pregunta en este momento."
+        
+        max_similarity = -1
+        best_response = "Lo siento, no tengo la respuesta a esa pregunta en este momento."
+        for item in items:
+            similarity = calculate_similarity(user_input, item['Question'])
+            if similarity > max_similarity:
+                max_similarity = similarity
+                best_response = item['Response']
+        
+        return best_response
+
+    except Exception as e:
+        print(f"Error al obtener la respuesta desde DynamoDB: {e}")
+        return "Lo siento, ocurrió un error al procesar tu solicitud."
+
+def calculate_similarity(user_input, stored_question):
+    """
+    Calcula la similitud entre la pregunta del usuario y las preguntas almacenadas.
+
+    Parámetros:
+    - user_input: La pregunta realizada por el usuario.
+    - stored_question: La pregunta almacenada en DynamoDB.
+
+    Retorna:
+    - Un valor de similitud basado en la cantidad de palabras comunes entre las preguntas.
+    """
+    user_words = set(user_input.lower().split())
+    question_words = set(stored_question.lower().split())
+    common_words = user_words.intersection(question_words)
+    return len(common_words) / max(len(user_words), len(question_words))
+
+def build_response(message, session_attributes, intent_name, content_type='CustomPayload'):
+    """
+    Construye la respuesta en el formato esperado por Lex.
+
+    Parámetros:
+    - message: El mensaje de respuesta.
+    - session_attributes: Los atributos de la sesión actuales.
+    - intent_name: El nombre de la intención actual.
+    - content_type: El tipo de contenido del mensaje (por defecto es 'CustomPayload').
+
+    Retorna:
+    - Un diccionario con la estructura de respuesta esperada por Lex.
+    """
     response = {
         "sessionState": {
             "dialogAction": {
@@ -274,3 +256,24 @@ def build_response(message, session_attributes, intent_name,content_type='Custom
         ]
     }
     return response
+
+def read_text_file_from_s3(file_name):
+    """
+    Lee el contenido de un archivo de texto almacenado en S3.
+
+    Parámetros:
+    - file_name: El nombre del archivo de texto en S3.
+
+    Retorna:
+    - El contenido del archivo de texto o un mensaje de error si no se puede leer el archivo.
+    """
+    try:
+        response = s3.get_object(Bucket=bucket_name, Key=f"{folder_name}/{file_name}")
+        text = response['Body'].read().decode('utf-8')
+        print(text)
+        return text
+    except Exception as e:
+        print(f"Error al leer el archivo desde S3: {e}")
+        return None
+
+
