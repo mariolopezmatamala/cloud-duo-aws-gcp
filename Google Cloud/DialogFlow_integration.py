@@ -66,6 +66,26 @@ def start_tutorial(session):
     return build_response(message, session, session_attributes)
 
 
+def get_step_content(step, substep):
+    """
+    Obtiene el contenido del paso y subpaso actuales desde Firestore.
+
+    Parámetros:
+    - step: El paso actual del tutorial.
+    - substep: El subpaso actual dentro del paso.
+
+    Retorna:
+    - El contenido correspondiente al paso y subpaso desde Firestore, o un mensaje de error si no se encuentra el contenido.
+    """
+    try:
+        doc_ref = db.collection("chatbotsteps").document(f"{step}_{substep}")
+        doc = doc_ref.get()
+        if not doc.exists:
+            return "No se encontró contenido para este paso y subpaso."
+        return doc.to_dict().get('Response', "No se encontró contenido para este paso y subpaso.")
+    except Exception as e:
+        print(f"Error al obtener contenido desde Firestore: {e}")
+        return "Ocurrió un error al obtener el contenido del paso."
 
 def next_step(session_attributes, session):
     """
@@ -91,6 +111,9 @@ def next_step(session_attributes, session):
     session_attributes['step'] = step
     session_attributes['substep'] = substep
 
+    file_name = get_step_content(step, substep)
+
+    message = read_text_from_file(file_name)
 
     return build_response(message, session, session_attributes)
 
@@ -107,6 +130,9 @@ def current_step(session_attributes, session):
     step = int(session_attributes.get('step', 1))
     substep = int(session_attributes.get('substep', 1))
 
+    file_name = get_step_content(step, substep)
+
+    message = read_text_from_file(file_name)
     
     return build_response(message, session, session_attributes)
 
@@ -130,6 +156,9 @@ def go_to_step(session_attributes, session):
     session_attributes['step'] = step
     session_attributes['substep'] = 1
 
+    file_name = get_step_content(step, 1)
+
+    message = read_text_from_file(file_name)
    
     return build_response(message, session, session_attributes)
 
@@ -166,4 +195,24 @@ def build_response(message, session, session_attributes):
         ]
     }
     return json.dumps(response), 200, {'Content-Type': 'application/json'}
+
+def read_text_from_file(file_name):
+    """
+    Lee el contenido de un archivo de texto almacenado en Google Cloud Storage.
+
+    Parámetros:
+    - file_name: El nombre del archivo de texto en Google Cloud Storage.
+
+    Retorna:
+    - El contenido del archivo de texto o un mensaje de error si no se puede leer el archivo.
+    """
+    try:
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(f"{folder_name}/{file_name}")
+        text = blob.download_as_text()
+        print(text)
+        return text
+    except Exception as e:
+        print(f"Error al leer el archivo desde Google Cloud Storage: {e}")
+        return "Ocurrió un error al leer el archivo desde Google Cloud Storage."
 
