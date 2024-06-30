@@ -8,20 +8,17 @@
 \usepackage{lmodern} % Scalable font
 \usepackage{microtype}
 \usepackage{placeins}
+% Para imágenes flotantes
+\usepackage{float}
+% Para ajustar páginas al ancho de la página
+\usepackage{tabularx}
+% Bibliografía
+\usepackage[sort,square,numbers,comma]{natbib}
 
 \RequirePackage{booktabs}
 \RequirePackage[table]{xcolor}
 \RequirePackage{xtab}
 \RequirePackage{multirow}
-
-% Links
-\PassOptionsToPackage{hyphens}{url}\usepackage[colorlinks]{hyperref}
-\hypersetup{
-	allcolors = {red}
-}
-
-% Ecuaciones
-\usepackage{amsmath}
 
 % Rutas de fichero / paquete
 \newcommand{\ruta}[1]{{\sffamily #1}}
@@ -33,7 +30,11 @@
 \widowpenalty100000
 \clubpenalty100000
 
-% Imágenes
+% Links
+\PassOptionsToPackage{hyphens}{url}\usepackage[colorlinks]{hyperref}
+\hypersetup{
+	allcolors = {red}
+}
 
 % Comando para insertar una imagen en un lugar concreto.
 % Los parámetros son:
@@ -63,8 +64,8 @@
 	\end{figure}
 }
 
-% El comando \figura nos permite insertar figuras comodamente, y utilizando
-% siempre el mismo formato. Los parametros son:
+% El comando \figuraConPosicion nos permite insertar figuras cómodamente, y utilizando
+% siempre el mismo formato. Los parámetros son:
 % 1 --> Porcentaje del ancho de página que ocupará la figura (de 0 a 1)
 % 2 --> Fichero de la imagen
 % 3 --> Texto a pie de imagen
@@ -90,7 +91,6 @@
   \end{figure}%
 }
 
-%
 % Comando para incluir imágenes en formato apaisado (sin marco).
 \newcommand{\figuraApaisadaSinMarco}[5]{%
   \begin{figure}%
@@ -101,9 +101,10 @@
     \end{center}%
   \end{figure}%
 }
+
 % Para las tablas
 \newcommand{\otoprule}{\midrule [\heavyrulewidth]}
-%
+
 % Nuevo comando para tablas pequeñas (menos de una página).
 \newcommand{\tablaSmall}[5]{%
  \begin{table}
@@ -122,7 +123,42 @@
  \end{table}
 }
 
-%
+% Nuevo comando para tablas pequeñas (menos de una página) con posición fija
+\newcommand{\tablaSmallConPosicion}[5]{%
+ \begin{table}[H]
+  \begin{center}
+   \rowcolors {2}{gray!35}{}
+   \begin{tabular}{#2}
+    \toprule
+    #4
+    \otoprule
+    #5
+    \bottomrule
+   \end{tabular}
+   \caption{#1}
+   \label{tabla:#3}
+  \end{center}
+ \end{table}
+}
+
+% Nuevo comando para tablas pequeñas (menos de una página) y ajustadas al ancho de la página (requiere \usepackage{tabularx})
+\newcommand{\tablaSmallAjustadaConPosicion}[5]{%
+ \begin{table}[H]
+  \begin{center}
+   \rowcolors {2}{gray!35}{}
+   \begin{tabularx}{\textwidth}{#2}
+    \toprule
+    #4
+    \midrule
+    #5
+    \bottomrule
+   \end{tabularx}
+   \caption{#1}
+   \label{tabla:#3}
+  \end{center}
+ \end{table}
+}
+
 % Nuevo comando para tablas pequeñas (menos de una página).
 \newcommand{\tablaSmallSinColores}[5]{%
  \begin{table}[H]
@@ -140,6 +176,7 @@
  \end{table}
 }
 
+% Nuevo comando para tablas apaisadas pequeñas (menos de una página).
 \newcommand{\tablaApaisadaSmall}[5]{%
 \begin{landscape}
   \begin{table}
@@ -159,7 +196,6 @@
 \end{landscape}
 }
 
-%
 % Nuevo comando para tablas grandes con cabecera y filas alternas coloreadas en gris.
 \newcommand{\tabla}[6]{%
   \begin{center}
@@ -191,7 +227,6 @@
   \end{center}
 }
 
-%
 % Nuevo comando para tablas grandes con cabecera.
 \newcommand{\tablaSinColores}[6]{%
   \begin{center}
@@ -222,7 +257,6 @@
   \end{center}
 }
 
-%
 % Nuevo comando para tablas grandes sin cabecera.
 \newcommand{\tablaSinCabecera}[5]{%
   \begin{center}
@@ -249,12 +283,9 @@
   \end{center}
 }
 
-
-
 \definecolor{cgoLight}{HTML}{EEEEEE}
 \definecolor{cgoExtralight}{HTML}{FFFFFF}
 
-%
 % Nuevo comando para tablas grandes sin cabecera.
 \newcommand{\tablaSinCabeceraConBandas}[5]{%
   \begin{center}
@@ -274,17 +305,15 @@
     }
     \bottomcaption{#1}
     \rowcolors[]{1}{cgoExtralight}{cgoLight}
-
-  \begin{xtabular}{#2}
-    #5
-   \bottomrule
-  \end{xtabular}
-  \label{tabla:#4}
+    \begin{xtabular}{#2}
+      #5
+     \bottomrule
+    \end{xtabular}
+    \label{tabla:#4}
   \end{center}
 }
 
-
-
+% Rutas de imágenes
 \graphicspath{ {./img/} }
 
 % Capítulos
@@ -304,7 +333,6 @@
 \renewcommand*\cftappendixname{\appendixname}
 
 \newcommand{\apendice}[1]{
-	%\renewcommand{\thechapter}{A}
 	\chapter{#1}
 }
 
@@ -320,7 +348,7 @@
   \null
   \thispagestyle{empty}
   % Cabecera ----------------
-\noindent\includegraphics[width=\textwidth]{cabecera}\vspace{1cm}%
+  \noindent\includegraphics[width=\textwidth]{cabecera}\vspace{1cm}%
   \vfill
   % Título proyecto y escudo informática ----------------
   \colorbox{cpardoBox}{%
@@ -332,7 +360,6 @@
       \end{center}
       \vspace{.2cm}
     \end{minipage}
-
   }%
   \hfill\begin{minipage}{.20\textwidth}
     \includegraphics[width=\textwidth]{escudoInfor}
@@ -349,68 +376,22 @@
   \end{center}%
   \null
   \cleardoublepage
-  }
+}
 \makeatother
 
-\newcommand{\nombre}{Nombre del alumno} %%% cambio de comando
+\newcommand{\nombre}{Mario Lopez Matamala} %%% cambio de comando
 
 % Datos de portada
-\title{título del TFG}
+\title{Creación de chatbots en Amazon Web Services y Google Cloud}
 \author{\nombre}
-\tutor{nombre tutor}
+\tutor{Dr. Jose Manuel}
 \date{\today}
 
 \begin{document}
 
 \maketitle
 
-
 \newpage\null\thispagestyle{empty}\newpage
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\thispagestyle{empty}
-
-
-\noindent\includegraphics[width=\textwidth]{cabecera}\vspace{1cm}
-
-\noindent D. nombre tutor, profesor del departamento de nombre departamento, área de nombre área.
-
-\noindent Expone:
-
-\noindent Que el alumno D. \nombre, con DNI dni, ha realizado el Trabajo final de Grado en Ingeniería Informática titulado título de TFG. 
-
-\noindent Y que dicho trabajo ha sido realizado por el alumno bajo la dirección del que suscribe, en virtud de lo cual se autoriza su presentación y defensa.
-
-\begin{center} %\large
-En Burgos, {\large \today}
-\end{center}
-
-\vfill\vfill\vfill
-
-% Author and supervisor
-\begin{minipage}{0.45\textwidth}
-\begin{flushleft} %\large
-Vº. Bº. del Tutor:\\[2cm]
-D. nombre tutor
-\end{flushleft}
-\end{minipage}
-\hfill
-\begin{minipage}{0.45\textwidth}
-\begin{flushleft} %\large
-Vº. Bº. del co-tutor:\\[2cm]
-D. nombre co-tutor
-\end{flushleft}
-\end{minipage}
-\hfill
-
-\vfill
-
-% para casos con solo un tutor comentar lo anterior
-% y descomentar lo siguiente
-%Vº. Bº. del Tutor:\\[2cm]
-%D. nombre tutor
-
 
 \newpage\null\thispagestyle{empty}\newpage
 
@@ -422,12 +403,21 @@ D. nombre co-tutor
 % Abstract en castellano
 \renewcommand*\abstractname{Resumen}
 \begin{abstract}
-En este primer apartado se hace una \textbf{breve} presentación del tema que se aborda en el proyecto.
+Los chatbots, también conocidos como bots de charla o bots conversacionales, son aplicaciones de software que surgieron en el siglo pasado. Estos programas simulan una conversación con una persona real, proporcionando respuestas automáticas y previamente establecidas a un conjunto de entradas del usuario. A lo largo de los años, la tecnología de los chatbots ha evolucionado significativamente, desde simples scripts de respuesta hasta sistemas avanzados de inteligencia artificial capaces de comprender y generar lenguaje natural. Hoy en día, los chatbots son utilizados en una variedad de aplicaciones, desde servicios de atención al cliente hasta asistentes personales virtuales.
+
+Amazon Web Services (AWS) y Google Cloud Platform (GCP) son dos de los principales proveedores de servicios de computación en la nube que ofrecen una amplia gama de servicios para el desarrollo y despliegue de chatbots. AWS proporciona Amazon Lex y  Google Cloud ofrece Dialogflow, ambas son plataformas sencillas que facilita la creación de interfaces conversacionales, utilizando técnicas de procesamiento del lenguaje natural (NLP) y aprendizaje automático.
+
+El objetivo de este proyecto es explorar estos servicios, examinando sus productos y viendo sus diferencias. AWS y GCP disponen de multitud de servicios, algunos de los cuales son similares en funcionalidad, como los servicios de traducción de texto y detección de lenguaje, mientras que otros presentan enfoques distintos. 
+
+Además, el chatbot desarrollado en este proyecto será capaz de responder preguntas sobre cómo crearse a sí mismo. Este podrá guiar a los usuarios a través de los pasos necesarios para configurar y desplegarlo en la nube, utilizando tanto AWS como GCP, a la vez que se configurar el resto de servicios relevantes para su desarrollo. 
+
+La herramienta se encuentra disponible en: \\TODO
+
 \end{abstract}
 
 \renewcommand*\abstractname{Descriptores}
 \begin{abstract}
-Palabras separadas por comas que identifiquen el contenido del proyecto Ej: servidor web, buscador de vuelos, android \ldots
+Chatbots, Bots conversacionales, Inteligencia artificial, Procesamiento del lenguaje natural, Amazon Web Services, AWS, Google Cloud Platform, GCP, Amazon Lex, Dialogflow, Computación en la nube, Aprendizaje automático, Servicios de traducción de texto, Detección de lenguaje.
 \end{abstract}
 
 \clearpage
@@ -435,12 +425,20 @@ Palabras separadas por comas que identifiquen el contenido del proyecto Ej: serv
 % Abstract en inglés
 \renewcommand*\abstractname{Abstract}
 \begin{abstract}
-A \textbf{brief} presentation of the topic addressed in the project.
+Chatbots, also known as conversational bots, are software applications that emerged in the last century. These programs simulate a conversation with a real person, providing automatic and pre-established responses to a set of user inputs. Over the years, chatbot technology has evolved significantly, from simple response scripts to advanced artificial intelligence systems capable of understanding and generating natural language. Today, chatbots are used in a variety of applications, from customer service to virtual personal assistants.
+
+Amazon Web Services (AWS) and Google Cloud Platform (GCP) are two of the main providers of cloud computing services that offer a wide range of services for the development and deployment of chatbots. AWS provides Amazon Lex and Google Cloud offers Dialogflow; both are user-friendly platforms that facilitate the creation of conversational interfaces using natural language processing (NLP) techniques and machine learning.
+
+The goal of this project is to explore these services by examining their products and identifying their differences. AWS and GCP offer a multitude of services, some of which are similar in functionality, such as text translation and language detection services, while others present different approaches.
+
+Additionally, the chatbot developed in this project will be able to answer questions about how to create itself. It will guide users through the necessary steps to configure and deploy it in the cloud, using both AWS and GCP, while also configuring the other relevant services for its development.
+
+The tool is available at: \\TODO
 \end{abstract}
 
 \renewcommand*\abstractname{Keywords}
 \begin{abstract}
-keywords separated by commas.
+Chatbots, Conversational bots, Artificial intelligence, Natural language processing, Amazon Web Services, AWS, Google Cloud Platform, GCP, Amazon Lex, Dialogflow, Cloud computing, Machine learning, Text translation services, Language detection.
 \end{abstract}
 
 \clearpage
@@ -458,16 +456,33 @@ keywords separated by commas.
 \clearpage
 
 \mainmatter
-\include{./tex/1_Introduccion}
-\include{./tex/2_Objetivos_del_proyecto}
-\include{./tex/3_Conceptos_teoricos}
-\include{./tex/4_Tecnicas_y_herramientas}
-\include{./tex/5_Aspectos_relevantes_del_desarrollo_del_proyecto}
-\include{./tex/6_Trabajos_relacionados}
-\include{./tex/7_Conclusiones_Lineas_de_trabajo_futuras}
+\include{./tex/1_introduccion}
+\include{./tex/2_objetivos}
+\include{./tex/3_conceptos_teoricos}
+\include{./tex/4_tecnicas_y_herramientas}
+\include{./tex/5_aspectos_relevantes}
+\include{./tex/6_trabajos_relacionados}
+\include{./tex/7_conclusiones}
 
 
 \bibliographystyle{plain}
 \bibliography{bibliografia}
+
+\newpage\null\thispagestyle{empty}
+
+% Imagen y texto de licencia al final de la memoria
+\newenvironment{bottompar}{\par\vspace*{\fill}}{\clearpage}
+
+\begin{bottompar}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=4cm]{licencia}
+\end{figure}
+
+\begin{center}
+Esta obra está bajo una licencia Creative Commons Reconocimiento-NoComercial-CompartirIgual 4.0 Internacional\\
+(\href{https://creativecommons.org/licenses/by-nc-sa/4.0/?ref=chooser-v1}{CC BY-NC-SA 4.0 DEED}).
+\end{center}
+\end{bottompar}
 
 \end{document}

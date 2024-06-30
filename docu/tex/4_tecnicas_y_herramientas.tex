@@ -1,0 +1,118 @@
+\capitulo{4}{Técnicas y herramientas}
+
+\section{Técnicas metodológicas}\label{metodologias}
+
+\subsection{Desarrollo Iterativo con Scrum}\label{scrum}
+Scrum es un marco de trabajo relativamente estructurado con roles específicos dentro de la metodología Agile, entre los cuales destacan el Product Owner, el Scrum Master y el desarrollador. Este marco se puede utilizar tanto para la gestión de proyectos como para el desarrollo de productos, especialmente en el despliegue de software. Con Scrum, los proyectos se dividen en iteraciones cortas llamadas sprints.
+
+Se ha optado por esta metodología debido a su alta adaptabilidad y su capacidad para generar entregas tempranas de valor. Con Scrum, se obtienen productos viables y evaluables por el usuario final desde las primeras fases del proyecto, lo que permite realizar ajustes y mejoras continuas basadas en el feedback recibido.
+
+
+\section{Control de versiones}\label{control_versiones}
+\begin{itemize}
+\item  
+Herramientas consideradas: Git \citep{online:git}, GitHub Desktop \citep{online:githubdesktop}
+\item
+  Herramienta elegida: Github Desktop
+\end{itemize}
+Git y GitHub Desktop son herramientas relacionadas con el control de versiones.
+
+Una de las ventajas de Git es que permite a cada desarrollador tener una copia local del repositorio completo y, aunque puede ser menos eficiente para proyectos muy grandes, es más sencillo de utilizar para proyectos pequeños. Además, el sistema de ramificación de Git es más intuitivo y facilita la tarea de los desarrolladores. GitHub Desktop, por otro lado, proporciona una interfaz gráfica amigable para interactuar con Git, haciendo que las operaciones de control de versiones sean más accesibles para aquellos que prefieren no trabajar con la línea de comandos.
+
+\section{Alojamiento del repositorio}\label{alojamiento_repositorio}
+\begin{itemize}
+\item
+  Herramientas consideradas: GitHub \citep{online:github}, GitLab \citep{online:gitlab}
+\item
+  Herramienta elegida: GitHub. 
+\end{itemize}
+GitLab ofrece una solución completa que incluye no solo la gestión de repositorios, sino también un conjunto de herramientas DevOps que abarcan desde la planificación hasta la entrega y monitorización del software.
+
+He decidido utilizar Github dado que lo conozco bastante bien, porque se utiliza en algunas asignaturas del Grado de Ingeniería Informática, su interfaz es muy intuitiva y porque es muy popular, lo que facilita la resolución de problemas gracias a su mayor comunidad
+
+\section{Comunicación}\label{comunicacion}
+
+\begin{itemize}
+\tightlist
+\item
+  Herramientas consideradas: email, GitHub y Microsoft Teams \citep{online:ms_teams}.
+\item
+  Herramientas elegidas: email y Microsoft Teams. 
+\end{itemize}
+
+\section{Entorno de desarrollo integrado (IDE)}\label{ide}
+\begin{itemize}
+\tightlist
+\item
+  Herramientas consideradas: Sublime Text \citep{online:sublime_text}, Visual Studio Code \citep{online:vs_code}.
+\item
+  Herramienta elegida: Visual Studio Code. 
+\end{itemize}
+
+He utilizado Visual Studio Code para probar a trabajar con un entorno virtual en mi propia máquina, invocando a los servicios en la nube de GCP. Sin embargo, esto no es necesario ya que se pueden utilizar perfectamente dentro de su propia consola.
+
+
+\section{Documentación de la memoria}\label{editor_texto}
+\begin{itemize}
+\tightlist
+\item
+  Herramientas consideradas: Texmaker \citep{online:texmaker} y Overleaf \citep{online:overleaf}.
+\item
+  Herramienta elegida: Texmaker. 
+\end{itemize}
+
+\emph{Texmaker} es un editor de texto gratuito, multiplataforma y que integra diversas
+herramientas necesarias para desarrollar documentos \LaTeX. \emph{Texmaker} incluye soporte 
+\emph{Unicode}, corrección ortográfica, auto-completado y un visor de PDF incorporado que es
+realmente útil. 
+
+Aunque al principio del desarrollo de la memoria lo empecé con Overleaf, acabé usando Texmaker. 
+
+
+
+\section{Calidad y consistencia de código}\label{calidad_codigo}
+\begin{itemize}
+\tightlist
+\item
+  Herramientas consideradas: Pylint \citep{online:pylint} y Flake8 \citep{online:flake8}.
+\item
+  Herramienta elegida: Pylint.
+\end{itemize}
+
+\emph{Pylint} es una herramienta de análisis de código estático para \emph{Python}, 
+diseñada para detectar errores y mejorar la calidad del código. Este analizador de código se
+utilizar para verificar sintaxis, semántica y obliga a seguir las convenciones de estilo
+de \emph{Python}. 
+
+Se ha escogido \emph{Pylint} frente a \emph{Flake8} porque, adicionalmente, permite medir la calidad del código en términos de complejidad y legibilidad, lo que favorece un mantenimiento posterior. Además, con \emph{Pylint} podemos hacer informes que señalan todos los fallos, 
+aumentando la productividad.
+
+
+\section{Cobertura de código}\label{cobertura_codigo}
+\begin{itemize}
+\tightlist
+\item
+  Herramientas consideradas: Coverage  \citep{online:coverage} y Pytest-cov \citep{online:pytest_cov}.
+\item
+  Herramienta elegida: Coverage.
+\end{itemize}
+
+\emph{Coverage} es una herramienta que permite medir la cobertura de código en \emph{Python}. 
+
+Uno de los aspectos relevantes de \emph{coverage} es que, con pocos comandos, permite generar
+un informe HTML muy intuitivo que guía al desarrollador hacia los fallos detectados. 
+
+
+
+
+
+\section{Desarrollo web}\label{desarrollo_web}
+
+\subsection{HTML}\label{html}
+
+\emph{HTML} \citep{wiki:html} es el lenguaje de marcado de hipertexto estándar para crear páginas web. Es un lenguaje que utiliza etiquetas para definir la esrtructura y el contenido de una página web. 
+
+\subsection{CSS}\label{css}
+
+\emph{CSS} \citep{wiki:css} es un lenguaje de hojas de estilo que se utiliza para dar un aspecto y diseño agradables a una página web. Se utiliza junto con \emph{HTML}.
+

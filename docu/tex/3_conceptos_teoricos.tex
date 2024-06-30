@@ -1,0 +1,51 @@
+\capitulo{3}{Conceptos teóricos}
+
+Los conceptos teóricos más destacables de este proyecto residen en el procesamiento del lenguaje natural(NLP en adelante) el cual es una subdisciplina de la inteligencia artificial que se dedica a la interacción entre las computadoras y los lenguajes humanos. Su objetivo principal permitira las computadoras comprender, interpretar y generar lenguaje humano.
+
+\section{Procesamiento del Lenguaje Natural}\label{NLP}
+
+El estudio del procesamiento del lenguaje natural tiene sus origen en la década de 1950, cuando Alan Turing propuso el Test de Turing como criterio para la inteligencia artificial. Desde entonces, el campo ha evolucionado pasando por varias fases, incluidas las primeras técnicas basadas en reglas, el auge de los modelos estadísticos en la década de 1990 y el aprendizaje profundo.
+
+\begin{itemize}
+    \item \textbf{Tokenización}: El proceso de dividir el texto en unidades más pequeñas llamadas tokens (generalmente palabras o frases).  \citep{jurafsky2020speech}.
+    
+    \item \textbf{Etiquetado de Partes del Discurso (POS Tagging)}: Asignar etiquetas gramaticales (como sustantivos, verbos, adjetivos) a cada token. Esto ayuda a entender la estructura gramatical del texto \citep{manning2014stanford}.
+    
+    \item \textbf{Reconocimiento de Entidades Nombradas (NER)}: Identificar y clasificar entidades mencionadas en el texto, como nombres de personas, organizaciones, lugares, fechas, etc. \citep{ratinov2009design}.
+    
+    \item \textbf{Análisis Sintáctico y Semántico}: Comprender la estructura gramatical (análisis sintáctico) y el significado (análisis semántico) de las frases. El análisis sintáctico descompone las oraciones en su estructura jerárquica, mientras que el análisis semántico busca comprender el significado y las relaciones entre las palabras \citep{jurafsky2020speech}.
+    
+    \item \textbf{Análisis de Sentimientos}: Determinar la opinión o el sentimiento expresado en un texto, que puede ser positivo, negativo o neutral. Esta técnica es ampliamente utilizada en el análisis de redes sociales y opiniones de clientes \citep{pang2008opinion}.
+    
+    \item \textbf{Traducción Automática}: Convertir texto de un idioma a otro mediante técnicas de NLP. Los modelos modernos de traducción automática utilizan redes neuronales recurrentes y transformadores para mejorar la precisión y fluidez de las traducciones \citep{bahdanau2015neural}.
+\end{itemize}
+
+\section{Técnicas avanzadas del NLP}\label{tecnicas-avanzadas}
+En los últimos años, los modelos de \textit{deep learning} han revolucionado el campo del NLP. Entre los más destacados, se encuentran:
+
+\begin{itemize}
+\item \textbf{Redes Neuronales Recurrentes (RNNs)}: Especialmente útiles para datos secuenciales, como texto y habla. Las RNNs pueden recordar información a lo largo de las secuencias de datos\citep{hochreiter1997long}.
+\item \textbf{Long Short-Term Memory (LSTM)}: Una variante de las RNNs que aborda el problema del gradiente desaparecido, permitiendo a los modelos capturar dependencias a largo plazo en los datos de secuencia \citep{hochreiter1997long}.
+\item \textbf{Transformadores:} Introducidos por Vaswani et al. (2017), los transformadores han demostrado ser altamente efectivos en una amplia gama de tareas de NLP. Estos modelos utilizan mecanismos de atención para procesar secuencias de datos de manera más precisa que las RNNs tradicionales. BERT (Bidirectional Encoder Representations from Transformers) y GPT-3 (Generative Pre-trained Transformer 3) son claros ejemplos de estos modelos \citep{vaswani2017attention, devlin2019bert}.
+
+\item \textbf{Word Embeddings:} Técnicas como Word2Vec y GloVe transforman palabras en vectores numéricos de alta dimensión que capturan semánticas y relaciones sintácticas \citep{mikolov2013efficient, pennington2014glove}.
+\item \textbf{Contextualized Word Representations:} Los modelos como ELMo y BERT generan representaciones de palabras que tienen en cuenta el contexto en el que aparecen, clasificando el texto y evitando la desambiguación semántica. \citep{peters2018deep, devlin2019bert}.
+
+\end{itemize}
+
+\section{Comprensión del Lenguaje Natural}\label{NLU}
+La comprensión del lenguaje natural (NLU) es una subdisciplina dentro del NLP que se centra específicamente en la comprensión del significado del lenguaje humano, este se ocupa de interpretar y entender la intención detrás de las palabras y frases.
+
+Si en NLP procesan entradas de texto o voz, realizan tokenización, etiquetado de partes del discurso y análisis sintáctico, NLU interpreta la intención del usuario, extraen entidades relevantes y comprenden el contexto de la conversación.
+
+\begin{itemize}
+\item \textbf{Detección de Intenciones:} Esta tarea implica identificar la intención o propósito del usuario a partir de su entrada. Por ejemplo, si un usuario escribe "¿Cuál es el clima hoy?", la intención es obtener información sobre el clima. 
+\item \textbf{Reconocimiento de Entidades:} NLU también se encarga de extraer entidades específicas mencionadas en el texto, como nombres de personas, fechas, ubicaciones y números. Por ejemplo, en la pregunta "¿Cuál es el clima hoy en Burgos?", "Burgos" es una entidad de ubicación que el chatbot debe reconocer para proporcionar una respuesta precisa.
+\item \textbf{Análisis de Contexto:} Los sistemas de NLU deben ser capaces de mantener y utilizar el contexto de la conversación para interpretar correctamente las entradas del usuario. Esto incluye la capacidad de comprender referencias anafóricas (por ejemplo, "él", "ella", "eso") y la información proporcionada en interacciones anteriores (atributos de sesión).
+\item \textbf{Desambiguación Semántica:} Las palabras y frases en el lenguaje natural a menudo tienen múltiples significados. NLU utiliza técnicas de desambiguación para determinar el sentido correcto de una palabra o frase en un contexto dado.
+\item \textbf{Manejo de Variabilidad del Lenguaje:} Los usuarios pueden expresar la misma intención de muchas maneras diferentes. Los sistemas de NLU deben ser capaces de reconocer sinónimos, variaciones gramaticales y diferentes formas de expresiones para comprender la intención subyacente.
+\end{itemize}
+
+Amazon Lex y Google Cloud Dialogflow son herramientas que utilizan técnicas avanzadas de procesamiento del lenguaje natural (NLP) para interpretar y responder al lenguaje humano. Ambas plataformas se basan en la comprensión del lenguaje natural (NLU) para identificar las intenciones del usuario y proporcionar respuestas contextualmente apropiadas.
+
+
