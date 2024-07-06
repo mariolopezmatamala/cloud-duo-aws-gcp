@@ -28,8 +28,6 @@ def lambda_handler(event, context):
         return startTutorial()
     elif intent_name == 'NextStep':
         return nextStep(event)
-    elif intent_name == 'RepeatStep':
-        return currentStep(event)
     elif intent_name == 'GoToStep':
         return goToStep(event)
     elif intent_name in intent_list:
@@ -111,25 +109,6 @@ def nextStep(event):
     
     return build_response(response, session_attributes, 'NextStep')
 
-def currentStep(event):
-    """
-    Repite el contenido del paso y subpaso actuales.
-
-    Parámetros:
-    - event: El evento desencadenado por Lex que contiene los atributos de la sesión.
-
-    Retorna:
-    - Un diccionario con el mensaje del paso y subpaso actuales y los atributos de la sesión.
-    """
-    session_attributes = event['sessionState'].get('sessionAttributes', {})
-    step = int(session_attributes.get('step', 1))
-    substep = int(session_attributes.get('substep', 1))
-    
-    file_name = get_step_content(step, substep)
-    
-    message = read_text_file_from_s3(file_name)
-    
-    return build_response(message, session_attributes, 'NextStep')
 
 def goToStep(event):
     """
