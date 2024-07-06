@@ -35,7 +35,7 @@ def lambda_handler(event, context):
         return handle_question(event)
     else:
         message = "No puedo manejar esa solicitud en este momento."
-        return build_response(message, session_attributes, intent_name)
+        return build_response([{'contentType': 'PlainText', 'content': message}], session_attributes, intent_name)
     
 def startTutorial():
     """
@@ -55,7 +55,7 @@ def startTutorial():
         3 - Configuración de la notificación
         4 - Creación de las funciones lambda
     Además, siempre puedes hacerme alguna pregunta acerca del paso en el que estemos. ¿Estás preparado?"""
-    return build_response(message, session_attributes, 'StartTutorial')
+    return build_response([{'contentType': 'CustomPayload', 'content': message}], session_attributes, 'StartTutorial')
 
 def get_step_content(step, substep):
     """
@@ -95,20 +95,20 @@ def nextStep(event):
     step = int(session_attributes.get('step', 1))
     substep = int(session_attributes.get('substep', 1))
     
-    if substep == step_substep.get(step, 0):
-        step += 1  
-        substep = 1  
-    else:
-        substep += 1  
-
-    session_attributes['step'] = step
-    session_attributes['substep'] = substep
+    response = []
     
-    file_name = get_step_content(step, substep)
+    for substep in range(step_substep.get(step, 1)):
+        file_name = get_step_content(step, substep)
+        texto = read_text_file_from_s3(file_name)
+        mensaje = {
+            'contentType': 'CustomPayload',
+            'content': texto
+        }
+        response.append(mensaje)
     
-    message = read_text_file_from_s3(file_name)
+    session_attributes['step'] = step + 1
     
-    return build_response(message, session_attributes, 'NextStep')
+    return build_response(response, session_attributes, 'NextStep')
 
 def currentStep(event):
     """
@@ -147,14 +147,20 @@ def goToStep(event):
         message = "Lo siento, el paso especificado no es válido. Por favor, elige un paso entre 1 y 4."
         return build_response(message, session_attributes, 'GoToStep')
     
-    session_attributes['step'] = step
-    session_attributes['substep'] = 1
+    response = []
     
-    file_name = get_step_content(step, 1)
+    for substep in range(step_substep.get(step, 1)):
+        file_name = get_step_content(step, substep)
+        texto = read_text_file_from_s3(file_name)
+        mensaje = {
+            'contentType': 'CustomPayload',
+            'content': texto
+        }
+        response.append(mensaje)
     
-    message = read_text_file_from_s3(file_name)
+    session_attributes['step'] = step + 1
     
-    return build_response(message, session_attributes, 'NextStep')
+    return build_response(response, session_attributes, 'GoToStep')
 
 def handle_question(event):
     """
@@ -171,8 +177,14 @@ def handle_question(event):
     session_attributes = event['sessionState'].get('sessionAttributes', {})
     
     response_message = get_most_similar_response(intent_name, user_input)
+    response = [
+        {
+            'contentType' : 'CustomPayload',
+            'content' : response_message
+        }
+    ]
     
-    return build_response(response_message, session_attributes, intent_name)
+    return build_response(response, session_attributes, intent_name)
 
 def get_most_similar_response(intent_name, user_input):
     """
@@ -275,5 +287,3 @@ def read_text_file_from_s3(file_name):
     except Exception as e:
         print(f"Error al leer el archivo desde S3: {e}")
         return None
-
-
