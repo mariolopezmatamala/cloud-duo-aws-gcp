@@ -1,8 +1,23 @@
-from logging import exception
-import boto3
-import json
-from botocore.exceptions import ClientError
+"""
+Este módulo facilita la interacción con varios servicios de AWS para procesar y traducir documentos.
+Utiliza AWS Comprehend para detectar el idioma de un texto, AWS Translate para traducir texto de un idioma a otro,
+y AWS Textract para extraer texto de documentos almacenados en S3. Las funciones están diseñadas para ser
+invocadas a través de AWS Lambda, lo que permite un procesamiento automático y escalable de documentos.
+
+Funciones:
+- detect_language: Detecta el idioma predominante en un texto dado.
+- translate_content: Traduce el texto a español si no está ya en ese idioma.
+- lambda_handler: Función principal de Lambda que maneja los eventos de SNS para el procesamiento de documentos.
+- process_response: Procesa la salida de Textract para extraer texto de documentos.
+- combinar_columnas: Combina el texto de dos columnas para documentos que están formateados en dos columnas.
+
+Estas funcionalidades están integradas en un flujo de trabajo que detecta el idioma de un documento, traduce su contenido
+si es necesario y maneja la estructura del documento para facilitar una presentación adecuada del texto traducido.
+
+"""
 import os
+import json
+import boto3
 
 s3 = boto3.client('s3')
 comprehend = boto3.client('comprehend')
@@ -81,16 +96,16 @@ def lambda_handler(event, context):
             
             es_text = translate_content(extracted_text)
             
-            with open("/tmp/file.txt", "w") as f:
+            with open("/tmp/file.txt", "w", encoding="utf-8") as f:
                 f.write(es_text)
                 
-            s3_response = s3.upload_file("/tmp/file.txt", bucket_name, "resultados-textract/" + job_id + ".txt")
+            s3.upload_file("/tmp/file.txt", bucket_name, "resultados-textract/" + job_id + ".txt")
 
             return {"statusCode": 200, "body": json.dumps("File uploaded successfully!")}
             
-        else:
-            print("El estado del trabajo no es 'SUCCEEDED'. Estado actual:", message['Status'])
-            return {"statusCode": 400, "body": json.dumps("Error: Job status is not 'SUCCEEDED'")}
+        
+        print("El estado del trabajo no es 'SUCCEEDED'. Estado actual:", message['Status'])
+        return {"statusCode": 400, "body": json.dumps("Error: Job status is not 'SUCCEEDED'")}
         
     except Exception as e:
         print("Se produjo una excepción:", e)
@@ -160,7 +175,7 @@ def combinar_columnas(columnas_por_pagina):
     - Lista con el texto combinado de cada página, junto en una lista.
     """
     texto_listas = []
-    for pagina, columnas in columnas_por_pagina.items():
+    for _, columnas in columnas_por_pagina.items():
         texto_izquierda = columnas['izquierda']
         texto_derecha = columnas['derecha']
         
@@ -168,4 +183,3 @@ def combinar_columnas(columnas_por_pagina):
         
 
     return texto_listas
-

@@ -1,3 +1,21 @@
+"""
+Este módulo está diseñado para interactuar con Amazon DynamoDB para almacenar y gestionar respuestas
+de un chatbot. El módulo utiliza la biblioteca boto3 para crear un cliente de DynamoDB, permitiendo 
+manipular los datos de las respuestas de intenciones del chatbot.
+
+La función principal, lambda_handler, se encarga de cargar múltiples entradas en la tabla de DynamoDB 
+para respuestas estándar a preguntas frecuentes y para gestionar el flujo de un tutorial paso a paso.
+Cada entrada define la intención, la pregunta y la respuesta correspondiente, facilitando así la 
+retrieval rápida durante las interacciones del chatbot.
+
+Funcionalidades:
+- Cargar respuestas estándar y pasos de tutorial en DynamoDB.
+- Gestionar errores y excepciones durante la carga de datos para asegurar la estabilidad del sistema.
+- Proveer un punto de integración simple para funciones Lambda que necesitan acceso a las respuestas del chatbot.
+
+Este módulo es utilizado típicamente en conjunción con AWS Lambda para procesar eventos que requieren 
+interacciones dinámicas basadas en contenido predefinido almacenado en DynamoDB.
+"""
 import boto3
 
 # Conectar con DynamoDB
@@ -15,7 +33,7 @@ def lambda_handler(event, context):
 
     """
     try:
-        Responses = [
+        responses = [
             {"IntentName": "CreacionRolIAM", "Question": "¿Qué es un rol IAM?", "Response": "Un rol IAM (Identity and Access Management) es una entidad que define un conjunto de permisos para realizar acciones en AWS. Un rol no está asociado a un usuario o grupo específico y puede ser asumido por cualquier entidad que necesite los permisos definidos."},
             {"IntentName": "CreacionRolIAM", "Question": "¿Cómo se crea un rol IAM?", "Response": "Para crear un rol en IAM, accede al servicio IAM en la consola de AWS, selecciona 'Roles' y haz clic en 'Create role'. Luego, sigue los pasos para definir la entidad de confianza y asignar permisos."},
             {"IntentName": "CreacionRolIAM", "Question": "¿Qué permisos necesita un rol para trabajar con S3?", "Response": "Un rol que trabaja con S3 necesita permisos como AmazonS3FullAccess, que permite realizar acciones en los recursos de S3."},
@@ -145,14 +163,14 @@ def lambda_handler(event, context):
             {"IntentName": "Sprints", "Question": "¿Cuántos sprints se realizaron?", "Response": "Se han realizado 7 sprints y una fase inicial."},
         ]
         
-        for Response in Responses:
-            table.put_item(Item=Response)
+        for response in responses:
+            table.put_item(Item=response)
         
         #=================================#
         #Introducción de pasos del tutorial
         steps = {1: 2, 2: 1, 3: 1, 4: 5, 5: 2, 6: 3, 7: 1}
         
-        Responses = []
+        responses = []
         
         for step, substeps in steps.items():
             for substep in range(1, substeps + 1):
@@ -161,11 +179,12 @@ def lambda_handler(event, context):
                     "Question": f"{step}_{substep}",
                     "Response": f"Paso{step}_Subpaso{substep}.txt"
                 }
-                Responses.append(entry)
+                responses.append(entry)
                 
-        for Response in Responses:
-            table.put_item(Item=Response)
+        for response in responses:
+            table.put_item(Item=response)
         
         print("Datos cargados exitosamente.")
     except Exception as e:
         print(f"Error al insertar datos en DynamoDB: {e}")
+        

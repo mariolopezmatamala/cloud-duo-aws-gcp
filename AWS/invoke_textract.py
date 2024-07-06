@@ -1,13 +1,23 @@
-import boto3
-import botocore
-from botocore.exceptions import ClientError
-from logging import exception
+"""
+Este módulo proporciona funcionalidades para iniciar el análisis de documentos utilizando AWS Textract
+a través de eventos desencadenados en AWS Lambda, basados en la manipulación de objetos en Amazon S3.
+
+El módulo define funciones para manejar el inicio del análisis de documentos y para responder a eventos
+de AWS Lambda que indican cambios en los objetos de S3, facilitando así la automatización de la
+extracción de texto de documentos almacenados.
+
+Funciones:
+- start_extract_document_analysis: Inicia el análisis de texto en un documento especificado en S3.
+- lambda_handler: Maneja eventos de Lambda para desencadenar análisis de documentos en respuesta a acciones en S3.
+"""
 import os
+import boto3
+
 
 SNSTopicArn=os.environ['SNSTopicArn']
 roleArn=os.environ['roleArn']
 
-def StartTextractDocumentAnalysis(s3_bucket, s3_key):
+def start_extract_document_analysis(s3_bucket, s3_key):
     """
     Inicia el análisis de un documento utilizando AWS Textract.
 
@@ -36,9 +46,9 @@ def StartTextractDocumentAnalysis(s3_bucket, s3_key):
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             print('Start Job Id: ' + response['JobId'])
             return response['JobId']
-        else:
-            print("No se pudo obtener el ID del trabajo de Textract.")
-            return False
+        
+        print("No se pudo obtener el ID del trabajo de Textract.")
+        return False
             
     except Exception as e :
         print("Exception happend message is: ", e)
@@ -68,9 +78,7 @@ def lambda_handler(event, context):
         from_path = "s3://{}/{}".format(s3_bucket, s3_key)
         print("from path {}".format(from_path))
         
-        job_id = StartTextractDocumentAnalysis(s3_bucket, s3_key)
+        job_id = start_extract_document_analysis(s3_bucket, s3_key)
         if job_id:
             print("Job ID returned: {}".format(job_id))
             return job_id
-        else:
-            return False

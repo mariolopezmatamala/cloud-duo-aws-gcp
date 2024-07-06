@@ -1,6 +1,25 @@
-import json
-import boto3
+"""
+Este módulo implementa una función AWS Lambda diseñada para interactuar con AWS Lex, DynamoDB y S3.
+Su objetivo principal es gestionar una serie de tutoriales interactivos relacionados con AWS, permitiendo
+a los usuarios avanzar a través de diferentes pasos de un tutorial, responder preguntas específicas, y
+recuperar información relevante almacenada tanto en S3 como en DynamoDB.
+
+El módulo define una función principal `lambda_handler` que procesa eventos entrantes de Lex y gestiona
+la lógica de decisión basada en la intención del usuario. Adicionalmente, incluye funciones auxiliares
+para manejar pasos específicos del tutorial, buscar y entregar respuestas basadas en la similitud del contenido,
+y leer documentos directamente desde un bucket de S3.
+
+Características:
+- Manejo de sesiones y pasos de tutoriales mediante atributos de sesión en Lex.
+- Consulta a DynamoDB para obtener respuestas a preguntas y contenido de tutorial.
+- Recuperación de archivos de texto desde S3 para proporcionar contenido detallado de los tutoriales.
+- Gestión de errores y excepciones para asegurar la estabilidad de la función Lambda en escenarios de error.
+
+Este módulo es parte de un sistema más grande diseñado para educar y asistir a los usuarios en el uso de
+servicios AWS a través de un chatbot interactivo.
+"""
 import os
+import boto3
 
 s3 = boto3.client('s3')
 dynamodb = boto3.resource('dynamodb')
@@ -25,18 +44,18 @@ def lambda_handler(event, context):
     session_attributes = event["sessionState"]["sessionAttributes"]
 
     if intent_name == 'StartTutorial':
-        return startTutorial()
-    elif intent_name == 'NextStep':
+        return start_tutorial()
+    if intent_name == 'NextStep':
         return handle_step(event, next_step=True)
-    elif intent_name == 'GoToStep':
+    if intent_name == 'GoToStep':
         return handle_step(event, next_step=False)
-    elif intent_name in intent_list:
+    if intent_name in intent_list:
         return handle_question(event)
-    else:
-        message = "No puedo manejar esa solicitud en este momento."
-        return build_response([{'contentType': 'PlainText', 'content': message}], session_attributes, intent_name)
+
+    message = "No puedo manejar esa solicitud en este momento."
+    return build_response([{'contentType': 'PlainText', 'content': message}], session_attributes, intent_name)
     
-def startTutorial():
+def start_tutorial():
     """
     Inicia el tutorial configurando los atributos iniciales de la sesión y devolviendo un mensaje de bienvenida.
 
@@ -239,5 +258,3 @@ def read_text_file_from_s3(file_name):
     except Exception as e:
         print(f"Error al leer el archivo desde S3: {e}")
         return None
-
-
