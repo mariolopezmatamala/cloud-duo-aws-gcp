@@ -105,18 +105,14 @@ def next_step(session_attributes, session):
     step = int(session_attributes.get('step', 1))
     substep = int(session_attributes.get('substep', 1))
 
-    if substep == step_substep.get(step, 0):
-        step += 1
-        substep = 1
-    else:
-        substep += 1
+    response_messages = []
 
-    session_attributes['step'] = step
-    session_attributes['substep'] = substep
+    for substep in range(step_substep.get(step, 1)):
+        file_name = get_step_content(step, substep)
+        text = read_text_from_file(file_name)
+        response_messages.append(text)
 
-    file_name = get_step_content(step, substep)
-
-    message = read_text_from_file(file_name)
+    session_attributes['step'] = step + 1
 
     return build_response(message, session, session_attributes)
 
@@ -156,12 +152,14 @@ def go_to_step(session_attributes, session):
         message = "Lo siento, el paso especificado no es válido. Por favor, elige un paso entre 1 y 4."
         return build_response(message, session, session_attributes)
 
-    session_attributes['step'] = step
-    session_attributes['substep'] = 1
+    response_messages = []
 
-    file_name = get_step_content(step, 1)
+    for substep in range(step_substep.get(step, 1)):
+        file_name = get_step_content(step, substep)
+        text = read_text_from_file(file_name)
+        response_messages.append(text)
 
-    message = read_text_from_file(file_name)
+    session_attributes['step'] = step + 1
     
     return build_response(message, session, session_attributes)
 
@@ -226,7 +224,7 @@ def calculate_similarity(user_input, stored_question):
     common_words = user_words.intersection(question_words)
     return len(common_words) / max(len(user_words), len(question_words))
 
-def build_response(message, session, session_attributes):
+def build_response(messages, session, session_attributes):
     """
     Construye la respuesta en el formato esperado por Dialogflow.
 
@@ -239,14 +237,18 @@ def build_response(message, session, session_attributes):
     - Un diccionario con la estructura de respuesta esperada por Dialogflow.
     """
     context_name = f"{session}/contexts/session_attributes"
-    response = {
-        "fulfillmentMessages": [
-            {
-                "text": {
-                    "text": [message]
-                }
+    if isinstance(messages, str):
+        messages = [messages]
+    fulfillment_Messages = [
+        {
+            "text": {
+                "text": [message]
             }
-        ],
+        } for message in messages
+    ]
+    
+    response = {
+        "fulfillmentMessages": fulfillment_Messages,
         "outputContexts": [
             {
                 "name": context_name,
