@@ -21,6 +21,7 @@ def dialogflow_webhook(request):
     request_json = request.get_json()
 
     if request_json and 'queryResult' in request_json:
+        intent_list = ['CreacionStorage', 'DocumentAI', 'CloudFunctions', 'DialogflowES', 'CreacionTask', 'IdeaTrabajo','QueHace','Objetivos','ConceptosTeoricos','TecnicasHerramientas','TrabajosRelacionados','Conclusiones','LineasFuturas','GitHubInfo','EstructuraMemoria','Metodologias','ServiciosAWS','Sprints']
         intent_name = request_json['queryResult']['intent']['displayName']
         session = request_json['session']
         
@@ -39,7 +40,7 @@ def dialogflow_webhook(request):
             return current_step(session_attributes, session)
         elif intent_name == 'GoToStep':
             return go_to_step(session_attributes, session)
-        elif intent_name in ['CreacionStorage', 'CreacionDocumentAI', 'CreacionFunctions', 'CreacionDialogFlow', 'CreacionTask']:
+        elif intent_name in intent_list:
             user_input = request_json['queryResult']['queryText']
             return handle_question(intent_name,session_attributes,user_input, session)
         else:
