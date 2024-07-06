@@ -1,4 +1,5 @@
 from google.cloud import firestore
+import json
 
 def loadDataToFirestore(request):
     """
@@ -45,7 +46,21 @@ def loadDataToFirestore(request):
             {"IntentName": "DialogflowES", "Question": "¿Cómo se crea un agente en Dialogflow ES?", "Response": "Para crear un agente, accede a Dialogflow ES, haz clic en 'Crear agente', proporciona un nombre, selecciona el proyecto de Google Cloud y configura el idioma y la región."},
             {"IntentName": "DialogflowES", "Question": "¿Qué es un intent en Dialogflow ES?", "Response": "Un intent es una configuración que define cómo debe responder el agente a una entrada específica del usuario, incluyendo las frases de entrenamiento y las respuestas."},
             {"IntentName": "DialogflowES", "Question": "¿Cómo se configura un fulfillment en Dialogflow ES?", "Response": "Para configurar un fulfillment, habilita el webhook en la sección de Fulfillment y proporciona la URL de tu Cloud Function que manejará las solicitudes."},
-            {"IntentName": "DialogflowES", "Question": "¿Qué son las frases de entrenamiento en Dialogflow ES?", "Response": "Las frases de entrenamiento son ejemplos de entradas que los usuarios pueden decir para activar un intent, ayudando a entrenar el modelo de lenguaje del agente."}
+            {"IntentName": "DialogflowES", "Question": "¿Qué son las frases de entrenamiento en Dialogflow ES?", "Response": "Las frases de entrenamiento son ejemplos de entradas que los usuarios pueden decir para activar un intent, ayudando a entrenar el modelo de lenguaje del agente."},
+            {"IntentName": "IdeaTrabajo", "Question": "¿Cuál es la idea del proyecto?", "Response": "La idea principal es desarrollar y comparar dos chatbots utilizando los servicios en la nube de AWS y GCP."},
+            {"IntentName": "QueHace", "Question": "¿Qué hace este proyecto?", "Response": "Este proyecto desarrolla dos chatbots utilizando AWS y GCP. Integra múltiples servicios en la nube como Amazon Lex, Lambda, S3, Textract, Comprehend, y Google Dialogflow, Cloud Functions, y Storage para manejar consultas del tutorial de creación de chatbots."},
+            {"IntentName": "Objetivos", "Question": "¿Cuáles son los objetivos del proyecto?", "Response": "- Evaluar la eficacia y eficiencia de las herramientas y servicios proporcionados por AWS y GCP para el desarrollo de chatbots. - Proporcionar una guía detallada y práctica para la implementación de chatbots en entornos empresariales utilizando tecnologías de computación en la nube."},
+            {"IntentName": "ConceptosTeoricos", "Question": "¿Qué conceptos teóricos se utilizan en el proyecto?", "Response": "Los conceptos teóricos más destacables de este proyecto residen en el procesamiento del lenguaje natural(NLP en adelante) el cual es una subdisciplina de la inteligencia artificial que se dedica a la interacción entre las computadoras y los lenguajes humanos."},
+            {"IntentName": "TecnicasHerramientas", "Question": "¿Qué técnicas y herramientas se han utilizado?", "Response": "Estas son las herramientas utilizadas en el proyecto: Scrum, Git, GitHub Desktop, GitHub, Email, Microsoft Teams, Visual Studio Code, Texmaker, Pylint, Coverage, HTML, CSS, Amazon Lex, AWS Lambda, Amazon S3, Amazon Textract, Amazon Comprehend, Amazon Translate, Amazon DynamoDB, Dialogflow, Cloud Functions y Cloud Storage."},
+            {"IntentName": "TrabajosRelacionados", "Question": "¿Qué trabajos similares existen?", "Response": "Estos son los trabajos similares y en los que se ha basado el proyecto: Estudio sobre la creación de un asistente virtual interactivo para la programación en C utilizando Amazon Lex y Lambda, Trabajo en GitHub sobre la extracción de insights conversacionales de facturas con Amazon Textract, Amazon Comprehend y Amazon Lex, Documentación proporcionada por AWS, Trabajo sobre la creación de un chatbot utilizando Dialogflow y Google Cloud Functions."},
+            {"IntentName": "Conclusiones", "Question": "¿Cuáles son las conclusiones del proyecto?", "Response": "A lo largo de este proyecto, se han desarrollado dos chatbots utilizando los servicios en la nube de AWS y GCP. Estos chatbots integran servicios avanzados como Amazon Lex, Lambda, S3, Textract, Comprehend, Translate, y DynamoDB, así como Dialogflow, Cloud Functions y Cloud Storage. Se ha adquirido un profundo conocimiento sobre microservicios, integración de múltiples servicios en la nube y mejores prácticas para el despliegue de chatbots."},
+            {"IntentName": "LineasFuturas", "Question": "¿Cuáles son las líneas de trabajo futuras?", "Response": "En un futuro, se puede mejorar el proyecto en estos ámbitos: Creación de Nuevos Intents, Integración de un Mayor Número de Servicios, Mejora de la Lógica en Funciones Lambda, Implementación de Aprendizaje Automático."},
+            {"IntentName": "GitHubInfo", "Question": "¿Dónde puedo encontrar el código en GitHub?", "Response": "Lo puedes encontrar desde este enlace de github:"},
+            {"IntentName": "GitHubInfo", "Question": "¿Dónde está la memoria y los anexos?", "Response": "Lo puedes encontrar desde este enlace de github:"},
+            {"IntentName": "GitHubInfo", "Question": "¿Cómo accedo a los documentos del proyecto?", "Response": "Lo puedes encontrar desde este enlace de github:"},
+            {"IntentName": "EstructuraMemoria", "Question": "¿Cuál es la estructura de la memoria del proyecto?", "Response": "La memoria se divide en: Introducción, Objetivos del proyecto, Conceptos teóricos, Técnicas y herramientas, Aspectos relevantes del desarrollo, Trabajos relacionados, Conclusiones y líneas de trabajo futuras, Plan del proyecto software, Especificación de requisitos del software, Especificación de diseño, Manual del programador, Manual de usuario."},
+            {"IntentName": "Metodologias", "Question": "¿Qué metodologías se han utilizado?", "Response": "Se ha seguido durante todo el proyecto un desarrollo iterativo basado en Scrum con Sprints"},
+            {"IntentName": "Sprints", "Question": "¿Cuántos sprints se realizaron?", "Response": "Se han realizado 7 sprints y una fase inicial."},
         ]
         
 
@@ -53,24 +68,25 @@ def loadDataToFirestore(request):
             doc_id = f"{response['IntentName']}_{response['Question']}"
             collection_ref.document(doc_id).set(response)
 
+        #=================================#
+        #Introducción de pasos del tutorial
+        steps = {1: 1, 1: 2, 3: 5, 4: 3, 5: 3, 6: 1}
+        
+        Responses = []
+
         collection_name = 'chatbotsteps'
         collection_ref = db.collection(collection_name)
 
-        responses2 =  [
-            {"IntentName": "NextStep", "Question": "1_1", "Response": "Paso1_SubPaso1.txt"},
-            {"IntentName": "NextStep", "Question": "2_1", "Response": "Paso2_SubPaso1.txt"},
-            {"IntentName": "NextStep", "Question": "2_2", "Response": "Paso2_SubPaso2.txt"},
-            {"IntentName": "NextStep", "Question": "3_1", "Response": "Paso3_SubPaso1.txt"},
-            {"IntentName": "NextStep", "Question": "3_2", "Response": "Paso3_SubPaso2.txt"},
-            {"IntentName": "NextStep", "Question": "3_3", "Response": "Paso3_SubPaso3.txt"},
-            {"IntentName": "NextStep", "Question": "3_4", "Response": "Paso3_SubPaso4.txt"},
-            {"IntentName": "NextStep", "Question": "3_5", "Response": "Paso3_SubPaso5.txt"},
-            {"IntentName": "NextStep", "Question": "4_1", "Response": "Paso4_SubPaso1.txt"},
-            {"IntentName": "NextStep", "Question": "4_2", "Response": "Paso4_SubPaso2.txt"},
-            {"IntentName": "NextStep", "Question": "5_1", "Response": "Paso5_SubPaso1.txt"},
-        ]   
+        for step, substeps in steps.items():
+            for substep in range(1, substeps + 1):
+                entry = {
+                    "IntentName": "tutorial",
+                    "Question": f"{step}_{substep}",
+                    "Response": f"Paso{step}_Subpaso{substep}.txt"
+                }
+                Responses.append(entry)   
 
-        for response in responses2:
+        for response in Responses:
             doc_id = f"{response['IntentName']}_{response['Question']}"
             collection_ref.document(doc_id).set(response)
 
