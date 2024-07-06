@@ -27,9 +27,9 @@ def lambda_handler(event, context):
     if intent_name == 'StartTutorial':
         return startTutorial()
     elif intent_name == 'NextStep':
-        return nextStep(event)
+        return handle_step(event, next_step=True)
     elif intent_name == 'GoToStep':
-        return goToStep(event)
+        return handle_step(event, next_step=False)
     elif intent_name in intent_list:
         return handle_question(event)
     else:
@@ -46,15 +46,56 @@ def startTutorial():
     Retorna:
     - Un diccionario con el mensaje de bienvenida y los atributos de la sesión inicializados.
     """
-    session_attributes = {'step': 0, 'substep': 1}
+    session_attributes = {'step': 0}
 
-    message = """Te voy a ayudar a crear un chatBot. Estos van a ser los pasos, si quieres puedes ir a uno en concreto. 
-        1 - Configuración del rol IAM.
+    message = """Te voy a ayudar a crear un chatBot. Estos van a ser los pasos, si quieres puedes ir a uno de los pasos en concreto:
+        1 - Creación del rol IAM.
         2 - Creación del bucket
         3 - Configuración de la notificación
         4 - Creación de las funciones lambda
-    Además, siempre puedes hacerme alguna pregunta acerca del paso en el que estemos. ¿Estás preparado?"""
+        5 - Creación base de datos
+        6 - Creación del bot
+    Además, a lo largo del tutorial siempre puedes hacerme alguna pregunta. ¿Estás preparado?"""
     return build_response([{'contentType': 'CustomPayload', 'content': message}], session_attributes, 'StartTutorial')
+
+def handle_step(event, next_step):
+    """
+    Maneja la lógica para avanzar al siguiente paso o ir a un paso específico del tutorial.
+
+    Parámetros:
+    - event: El evento desencadenado por Lex que contiene los atributos de la sesión.
+    - next_step: Booleano que indica si se debe avanzar al siguiente paso o ir a un paso específico.
+
+    Retorna:
+    - Un diccionario con el mensaje del paso o subpaso correspondiente y los atributos de la sesión actualizados.
+    """
+    step_substep = {0: 1, 1: 2, 2: 1, 3: 1, 4: 5, 5: 2, 6: 3, 7: 1}
+    session_attributes = event['sessionState'].get('sessionAttributes', {})
+    
+    if next_step:
+        step = int(session_attributes.get('step', 0))
+    else:
+        step = int(event['sessionState']['intent']['slots']['StepNumber']['value']['interpretedValue'])
+        session_attributes['step'] = step
+        if step < 1 or step > 7:
+            message = "Lo siento, el paso especificado no es válido. Por favor, elige un paso entre 1 y 7."
+            return build_response([{'contentType': 'PlainText', 'content': message}], session_attributes, 'GoToStep')
+    
+    response = []
+    
+    for substep in range(step_substep.get(step, 1)):
+        file_name = get_step_content(step, substep)
+        texto = read_text_file_from_s3(file_name)
+        mensaje = {
+            'contentType': 'CustomPayload',
+            'content': texto
+        }
+        response.append(mensaje)
+    
+    session_attributes['step'] = step + 1
+    
+    return build_response(response, session_attributes, 'NextStep' if next_step else 'GoToStep')
+
 
 def get_step_content(step, substep):
     """
@@ -77,70 +118,6 @@ def get_step_content(step, substep):
     except Exception as e:
         print(f"Error al obtener contenido desde DynamoDB: {e}")
         return "Ocurrió un error al obtener el contenido del paso."
-
-
-def nextStep(event):
-    """
-    Avanza al siguiente paso o subpaso del tutorial.
-
-    Parámetros:
-    - event: El evento desencadenado por Lex que contiene los atributos de la sesión.
-
-    Retorna:
-    - Un diccionario con el mensaje del siguiente paso o subpaso y los atributos de la sesión actualizados.
-    """
-    step_substep = {0: 1, 1: 2, 2: 1, 3: 1, 4: 4}
-    session_attributes = event['sessionState'].get('sessionAttributes', {})
-    step = int(session_attributes.get('step', 1))
-    substep = int(session_attributes.get('substep', 1))
-    
-    response = []
-    
-    for substep in range(step_substep.get(step, 1)):
-        file_name = get_step_content(step, substep)
-        texto = read_text_file_from_s3(file_name)
-        mensaje = {
-            'contentType': 'CustomPayload',
-            'content': texto
-        }
-        response.append(mensaje)
-    
-    session_attributes['step'] = step + 1
-    
-    return build_response(response, session_attributes, 'NextStep')
-
-
-def goToStep(event):
-    """
-    Salta a un paso específico del tutorial según la solicitud del usuario.
-
-    Parámetros:
-    - event: El evento desencadenado por Lex que contiene los atributos de la sesión y el número de paso deseado.
-
-    Retorna:
-    - Un diccionario con el mensaje del paso especificado y los atributos de la sesión actualizados.
-    """
-    session_attributes = event['sessionState'].get('sessionAttributes', {})
-    step = int(event['sessionState']['intent']['slots']['StepNumber']['value']['interpretedValue'])
-    
-    if step < 1 or step > 4:
-        message = "Lo siento, el paso especificado no es válido. Por favor, elige un paso entre 1 y 4."
-        return build_response(message, session_attributes, 'GoToStep')
-    
-    response = []
-    
-    for substep in range(step_substep.get(step, 1)):
-        file_name = get_step_content(step, substep)
-        texto = read_text_file_from_s3(file_name)
-        mensaje = {
-            'contentType': 'CustomPayload',
-            'content': texto
-        }
-        response.append(mensaje)
-    
-    session_attributes['step'] = step + 1
-    
-    return build_response(response, session_attributes, 'GoToStep')
 
 def handle_question(event):
     """
@@ -216,7 +193,7 @@ def calculate_similarity(user_input, stored_question):
     common_words = user_words.intersection(question_words)
     return len(common_words) / max(len(user_words), len(question_words))
 
-def build_response(message, session_attributes, intent_name, content_type='CustomPayload'):
+def build_response(messages, session_attributes, intent_name):
     """
     Construye la respuesta en el formato esperado por Lex.
 
@@ -240,12 +217,7 @@ def build_response(message, session_attributes, intent_name, content_type='Custo
                 'state': 'Fulfilled'
             }
         },
-        "messages": [
-            {
-                "contentType": content_type,
-                "content": message
-            }
-        ]
+        "messages": messages
     }
     return response
 
@@ -267,3 +239,5 @@ def read_text_file_from_s3(file_name):
     except Exception as e:
         print(f"Error al leer el archivo desde S3: {e}")
         return None
+
+
