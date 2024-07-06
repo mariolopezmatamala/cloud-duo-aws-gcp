@@ -126,4 +126,3 @@ def enviar_notificacion(text):
         client.create_task(request={"parent": parent, "task": task})
     except Exception as e:
         print("No se pudo enviar la notificacion: ", e)
-               
