@@ -35,11 +35,9 @@ def dialogflow_webhook(request):
         if intent_name == 'StartTutorial':
             return start_tutorial(session)
         elif intent_name == 'NextStep':
-            return next_step(session_attributes, session)
-        elif intent_name == 'RepeatStep':
-            return current_step(session_attributes, session)
+            return handle_step(session_attributes, session, next_step=True)
         elif intent_name == 'GoToStep':
-            return go_to_step(session_attributes, session)
+            return handle_step(session_attributes, session, next_step=False)
         elif intent_name in intent_list:
             user_input = request_json['queryResult']['queryText']
             return handle_question(intent_name,session_attributes,user_input, session)
@@ -58,16 +56,47 @@ def start_tutorial(session):
     Retorna:
     - Un diccionario con el mensaje de bienvenida y los atributos de la sesión inicializados.
     """
-    session_attributes = {
-        'step': 0,
-        'substep': 1
-    }
+    session_attributes = {'step': 0}
 
     message = """Te voy a enseñar paso a paso a crear un chatbot. 
         Lo primero de todo que tienes que hacer para poder empezar a trabajar con los servicios de Google cloud y crear el entorno es: Crear un proyecto nuevo. Es muy sencillo, nada mas entrar en la consola te aparece la opción.
         Muy importante: Guarda el ID del proyecto, es posible que lo necesites más adelante si quieres configurarte tu entorno virtual. ¿Empezamos?
         """  
     return build_response(message, session, session_attributes)
+
+def handle_step(event, next_step):
+    """
+    Maneja la lógica para avanzar al siguiente paso o ir a un paso específico del tutorial.
+
+    Parámetros:
+    - session_attributes: Los atributos actuales de la sesión.
+    - session: La sesión actual de Dialogflow.
+    - next_step: Booleano que indica si se debe avanzar al siguiente paso o ir a un paso específico.
+
+    Retorna:
+    - Un diccionario con el mensaje del paso o subpaso correspondiente y los atributos de la sesión actualizados.
+    """
+    step_substep = {0: 1, 1: 1, 1: 2, 3: 5, 4: 3, 5: 3, 6: 1}
+
+    if next_step:
+        step = int(session_attributes.get('step', 0))
+    else:
+        step = int(session_attributes.get('stepNumber', 1))
+        session_attributes['step'] = step
+        if step < 1 or step > 6:
+            message = "Lo siento, el paso especificado no es válido. Por favor, elige un paso entre 1 y 7."
+            return build_response([message], session, session_attributes)
+
+    response_messages = []
+
+    for substep in range(step_substep.get(step, 1)):
+        file_name = get_step_content(step, substep)
+        text = read_text_from_file(file_name)
+        response_messages.append(text)
+
+    session_attributes['step'] = step + 1
+
+    return build_response(response_messages, session, session_attributes)
 
 def get_step_content(step, substep):
     """
@@ -89,62 +118,6 @@ def get_step_content(step, substep):
     except Exception as e:
         print(f"Error al obtener contenido desde Firestore: {e}")
         return "Ocurrió un error al obtener el contenido del paso."
-
-
-def next_step(session_attributes, session):
-    """
-    Avanza al siguiente paso o subpaso del tutorial.
-
-    Parámetros:
-    - session_attributes: Los atributos de la sesión actuales.
-    - request_json: El evento desencadenado por Dialogflow que contiene los atributos de la sesión.
-
-    Retorna:
-    - Un diccionario con el mensaje del siguiente paso o subpaso y los atributos de la sesión actualizados.
-    """
-    step_substep = {0: 1, 1: 1, 2: 2, 3: 5, 4: 2, 5: 1}
-    step = int(session_attributes.get('step', 1))
-    substep = int(session_attributes.get('substep', 1))
-
-    response_messages = []
-
-    for substep in range(step_substep.get(step, 1)):
-        file_name = get_step_content(step, substep)
-        text = read_text_from_file(file_name)
-        response_messages.append(text)
-
-    session_attributes['step'] = step + 1
-
-    return build_response(message, session, session_attributes)
-
-
-def go_to_step(session_attributes, session):
-    """
-    Salta a un paso específico del tutorial según la solicitud del usuario.
-
-    Parámetros:
-    - session_attributes: Los atributos de la sesión actuales.
-    - request_json: El evento desencadenado por Dialogflow que contiene los atributos de la sesión y el número de paso deseado.
-
-    Retorna:
-    - Un diccionario con el mensaje del paso especificado y los atributos de la sesión actualizados.
-    """
-    step = int(session_attributes.get('step', 1))
-
-    if step < 1 or step > 5:
-        message = "Lo siento, el paso especificado no es válido. Por favor, elige un paso entre 1 y 4."
-        return build_response(message, session, session_attributes)
-
-    response_messages = []
-
-    for substep in range(step_substep.get(step, 1)):
-        file_name = get_step_content(step, substep)
-        text = read_text_from_file(file_name)
-        response_messages.append(text)
-
-    session_attributes['step'] = step + 1
-    
-    return build_response(message, session, session_attributes)
 
 
 def handle_question(intent_name, session_attributes, user_input, session):
