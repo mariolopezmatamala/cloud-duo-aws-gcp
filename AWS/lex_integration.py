@@ -65,7 +65,7 @@ def start_tutorial():
     Retorna:
     - Un diccionario con el mensaje de bienvenida y los atributos de la sesión inicializados.
     """
-    session_attributes = {'step': 0}
+    session_attributes = {'step': 1}
 
     message = """Te voy a ayudar a crear un chatBot. Estos van a ser los pasos, si quieres puedes ir a uno de los pasos en concreto:
         1 - Creación del rol IAM.

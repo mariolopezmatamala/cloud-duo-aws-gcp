@@ -81,7 +81,7 @@ def start_tutorial(session):
     Retorna:
     - Un diccionario con el mensaje de bienvenida y los atributos de la sesión inicializados.
     """
-    session_attributes = {'step': 0}
+    session_attributes = {'step': 1}
 
     message = """Te voy a enseñar paso a paso a crear un chatbot. 
         Lo primero de todo que tienes que hacer para poder empezar a trabajar con los servicios de Google cloud y crear el entorno es: Crear un proyecto nuevo. Es muy sencillo, nada mas entrar en la consola te aparece la opción.
@@ -135,7 +135,7 @@ def get_step_content(step, substep):
     - El contenido correspondiente al paso y subpaso desde Firestore, o un mensaje de error si no se encuentra el contenido.
     """
     try:
-        doc_ref = db.collection("chatbotsteps").document(f"{step}_{substep}")
+        doc_ref = db.collection("chatbotsteps").document(f"tutorial_{step}_{substep}")
         doc = doc_ref.get()
         if not doc.exists:
             return "No se encontró contenido para este paso y subpaso."
