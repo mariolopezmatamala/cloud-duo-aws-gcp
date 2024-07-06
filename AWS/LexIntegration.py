@@ -20,6 +20,7 @@ def lambda_handler(event, context):
     Retorna:
     - Un diccionario con la respuesta apropiada basada en la intención del usuario.
     """
+    intent_list = ['CreacionRolIAM', 'CreacionBucketS3', 'CrearSNS', 'CrearFuncionLambda', 'ExplicacionFuncionesLambda', 'Textract', 'ComprehendTranslate', 'Lex','IdeaTrabajo','QueHace','Objetivos','ConceptosTeoricos','TecnicasHerramientas','TrabajosRelacionados','Conclusiones','LineasFuturas','GitHubInfo','EstructuraMemoria','Metodologias','ServiciosAWS','Sprints']
     intent_name = event['sessionState']['intent']['name']
     session_attributes = event["sessionState"]["sessionAttributes"]
 
@@ -31,7 +32,7 @@ def lambda_handler(event, context):
         return currentStep(event)
     elif intent_name == 'GoToStep':
         return goToStep(event)
-    elif intent_name in ['CreacionRolIAM', 'CreacionBucketS3', 'CrearSNS', 'CrearFuncionLambda', 'ExplicacionFuncionesLambda', 'Textract', 'ComprehendTranslate', 'Lex']:
+    elif intent_name in intent_list:
         return handle_question(event)
     else:
         message = "No puedo manejar esa solicitud en este momento."
