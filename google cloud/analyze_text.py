@@ -1,9 +1,26 @@
+"""
+Este módulo se encarga de procesar textos almacenados en Google Cloud Storage mediante una función de Google Cloud Function.
+Detecta el idioma del texto, lo traduce al español si no está en ese idioma y luego sube el texto traducido de vuelta al almacenamiento.
+
+El flujo completo de la función se inicia con una solicitud HTTP que lleva la ubicación de un documento en Cloud Storage como parte
+de la carga de la solicitud. La función recupera el texto del documento, detecta su idioma, lo traduce si es necesario,
+y finalmente sube el texto traducido de vuelta al mismo bucket pero potencialmente bajo un nombre de archivo modificado.
+
+Funciones:
+- main: Función principal que maneja la solicitud HTTP, orquestando el flujo de procesamiento del texto.
+- get_text_storage: Recupera el texto de un documento almacenado en Cloud Storage.
+- detect_language: Utiliza Google Cloud Natural Language para detectar el idioma del texto.
+- translate_text_to_spanish: Utiliza Google Cloud Translate para traducir el texto al español.
+- upload_text_to_storage: Sube el texto procesado de vuelta a Cloud Storage.
+
+Este módulo es ideal para ser usado en entornos donde se necesite procesamiento automático y traslación de documentos almacenados,
+especialmente útil en entornos multilingües donde la traducción al español es frecuentemente requerida.
+"""
 from google.cloud import language_v1
 from google.cloud import storage
 from google.cloud import translate_v2 as translate
-import json
 
-bucket_name = "mi-bucket-pdf"
+BUCKET_NAME = "mi-bucket-pdf"
 
 def main(request):
     '''Función principal que maneja la solicitud de la función.
@@ -42,7 +59,7 @@ def get_text_storage(document_location):
     try:
         storage_client = storage.Client()
 
-        bucket = storage_client.bucket(bucket_name)
+        bucket = storage_client.bucket(BUCKET_NAME)
         blob = bucket.blob(document_location)
         text = blob.download_as_text()
         return text
@@ -99,9 +116,10 @@ def upload_text_to_storage(document_location, text):
     try:
         storage_client = storage.Client()
 
-        bucket = storage_client.bucket(bucket_name)
+        bucket = storage_client.bucket(BUCKET_NAME)
         blob = bucket.blob(document_location)
         blob.upload_from_string(text, content_type='text/plain')
     
     except Exception as e:
         print(f"Error en upload_text_to_storage: {e}")
+        

@@ -1,3 +1,16 @@
+"""
+Este módulo utiliza servicios de Google Cloud como Document AI, Cloud Storage y Cloud Tasks para procesar documentos PDF asincrónicamente.
+Extrae texto de documentos PDF almacenados en un bucket de Cloud Storage, procesa este texto y luego guarda los resultados en otro bucket.
+Adicionalmente, envía notificaciones sobre el estado del procesamiento usando Cloud Tasks.
+
+Funciones:
+- process_pdf_async: Realiza la llamada asincrónica a Google Document AI para procesar el documento PDF y extraer el texto.
+- extract_text_and_save: Es el punto de entrada para eventos de Google Cloud Functions que maneja la lógica de extracción y almacenamiento de texto.
+- guardar_texto_en_storage: Guarda el texto procesado en Google Cloud Storage y envía una notificación a través de Cloud Tasks.
+- enviar_notificacion: Envía una notificación utilizando Google Cloud Tasks para indicar que el procesamiento del documento ha concluido.
+
+Este módulo es ideal para integrarse en flujos de trabajo donde los documentos PDF necesitan ser procesados automáticamente y los resultados almacenados accesiblemente para su posterior uso.
+"""
 import os
 import asyncio
 from google.api_core.client_options import ClientOptions
@@ -110,6 +123,7 @@ def enviar_notificacion(text):
             }
         }
 
-        response = client.create_task(request={"parent": parent, "task": task})
+        client.create_task(request={"parent": parent, "task": task})
     except Exception as e:
         print("No se pudo enviar la notificacion: ", e)
+               

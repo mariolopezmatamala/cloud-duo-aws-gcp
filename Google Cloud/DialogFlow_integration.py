@@ -1,6 +1,31 @@
+"""
+Este módulo interactúa con Google Cloud Firestore y Storage para manejar solicitudes de webhook de Dialogflow,
+procesando comandos basados en intenciones y gestionando flujos de conversación en un chatbot. Las funciones
+incluidas manejan la extracción y procesamiento de texto, detectan intenciones, y devuelven respuestas apropiadas
+según la lógica del chatbot.
+
+El flujo general de la función incluye la recepción de una solicitud de Dialogflow, el procesamiento de la
+intención especificada en la solicitud, la ejecución de acciones como la lectura de texto de Cloud Storage,
+la traducción de texto y la recuperación de respuestas de Firestore. Además, se proporcionan funcionalidades para
+administrar los pasos de un tutorial interactivo dentro del chatbot.
+
+Funciones:
+- dialogflow_webhook: Procesa la solicitud de Dialogflow y determina la acción a tomar basada en la intención del usuario.
+- start_tutorial: Inicia un tutorial interactivo configurando atributos iniciales de la sesión.
+- handle_step: Avanza a través de los pasos de un tutorial basado en la sesión actual y los atributos almacenados.
+- get_step_content: Recupera contenido específico de un paso de Firestore.
+- handle_question: Responde a preguntas específicas basadas en la intención y el contexto del usuario.
+- get_most_similar_response: Busca en Firestore la respuesta más adecuada a la pregunta del usuario.
+- calculate_similarity: Calcula la similitud entre la entrada del usuario y las preguntas almacenadas para determinar la mejor respuesta.
+- build_response: Construye y devuelve una respuesta formateada para Dialogflow.
+- read_text_from_file: Lee el contenido de un archivo de texto almacenado en Cloud Storage.
+
+Este módulo es esencial para la operación eficiente de un chatbot interactivo que utiliza Dialogflow y Google Cloud
+Services para manejar y responder a las interacciones del usuario.
+"""
+import os
 import json
 from google.cloud import storage, firestore
-import os
 
 storage_client = storage.Client()
 db = firestore.Client()
@@ -34,16 +59,16 @@ def dialogflow_webhook(request):
 
         if intent_name == 'StartTutorial':
             return start_tutorial(session)
-        elif intent_name == 'NextStep':
+        if intent_name == 'NextStep':
             return handle_step(session_attributes, session, next_step=True)
-        elif intent_name == 'GoToStep':
+        if intent_name == 'GoToStep':
             return handle_step(session_attributes, session, next_step=False)
-        elif intent_name in intent_list:
+        if intent_name in intent_list:
             user_input = request_json['queryResult']['queryText']
             return handle_question(intent_name,session_attributes,user_input, session)
-        else:
-            message = "No puedo manejar esa solicitud en este momento."
-            return build_response(message, session, session_attributes)
+        
+        message = "No puedo manejar esa solicitud en este momento."
+        return build_response(message, session, session_attributes)
 
 
 def start_tutorial(session):
@@ -64,7 +89,7 @@ def start_tutorial(session):
         """  
     return build_response(message, session, session_attributes)
 
-def handle_step(event, next_step):
+def handle_step(session_attributes, session, next_step):
     """
     Maneja la lógica para avanzar al siguiente paso o ir a un paso específico del tutorial.
 
@@ -76,7 +101,7 @@ def handle_step(event, next_step):
     Retorna:
     - Un diccionario con el mensaje del paso o subpaso correspondiente y los atributos de la sesión actualizados.
     """
-    step_substep = {0: 1, 1: 1, 1: 2, 3: 5, 4: 3, 5: 3, 6: 1}
+    step_substep = {0: 1, 1: 1, 2: 2, 3: 5, 4: 3, 5: 3, 6: 1}
 
     if next_step:
         step = int(session_attributes.get('step', 0))
@@ -195,7 +220,7 @@ def build_response(messages, session, session_attributes):
     context_name = f"{session}/contexts/session_attributes"
     if isinstance(messages, str):
         messages = [messages]
-    fulfillment_Messages = [
+    fulfillment_messages = [
         {
             "text": {
                 "text": [message]
@@ -204,7 +229,7 @@ def build_response(messages, session, session_attributes):
     ]
     
     response = {
-        "fulfillmentMessages": fulfillment_Messages,
+        "fulfillmentMessages": fulfillment_messages,
         "outputContexts": [
             {
                 "name": context_name,
@@ -234,3 +259,4 @@ def read_text_from_file(file_name):
     except Exception as e:
         print(f"Error al leer el archivo desde Google Cloud Storage: {e}")
         return "Ocurrió un error al leer el archivo desde Google Cloud Storage."
+    

@@ -1,24 +1,33 @@
+"""
+Esta función de Google Cloud Function está diseñada para cargar datos predefinidos en Google Firestore.
+Es invocada por una solicitud HTTP, típicamente como parte de una operación de inicialización o mantenimiento
+para asegurar que Firestore contenga las respuestas necesarias para un chatbot.
+
+Funcionalidades:
+- Conexión con Firestore: Establece un cliente de Firestore y se conecta a una colección específica.
+- Datos predefinidos: Define una lista de respuestas típicas que un chatbot podría necesitar, cubriendo
+  diversas intenciones y preguntas frecuentes.
+- Carga de datos: Inserta los datos en Firestore, generando un ID de documento único basado en la combinación
+  de 'IntentName' y 'Question' para evitar duplicados y permitir una fácil recuperación.
+- Manejo de excepciones: Captura y maneja cualquier error durante el proceso de carga, proporcionando
+  retroalimentación adecuada.
+
+Parámetros:
+- request (flask.Request): El objeto request que activa la función. No se utiliza directamente
+  dentro de la función, pero es necesario para cumplir con la interfaz esperada por Google Cloud Functions.
+
+Retorno:
+- str: Un mensaje que indica el resultado de la operación de carga, ya sea un éxito o un mensaje de error
+  detallando cualquier problema que ocurrió.
+
+Ejemplo de uso:
+Esta función puede ser desencadenada manualmente a través de una herramienta de interfaz de línea de comandos
+o automáticamente por un evento en el sistema que requiere reinitialización o actualización de los datos del
+chatbot en Firestore.
+"""
 from google.cloud import firestore
-import json
 
-def loadDataToFirestore(request):
-    """
-    Esta función carga datos en la base de datos de Firestore.
-    
-    Parámetros:
-    request: La solicitud HTTP que activa la función. Este parámetro no se utiliza dentro de la función, pero es necesario para que funcione como una Cloud Function. 
-    La función se activa como prueba para cargar los datos.
-
-    Acciones:
-    - Conecta con el cliente de Firestore.
-    - Define el nombre de la colección en la que se insertarán los documentos.
-    - Define una lista de diccionarios, donde cada diccionario representa un documento con campos 'IntentName', 'Question' y 'Response'.
-    - Itera sobre la lista de diccionarios, generando un ID de documento único para cada diccionario combinando 'IntentName' y 'Question'.
-    - Inserta cada documento en la colección de Firestore utilizando el ID de documento generado.
-    
-    Retorno:
-    - Devuelve un mensaje indicando que los datos se han cargado exitosamente.
-    """
+def load_data_to_firestore(request):
     try:
         db = firestore.Client()
         collection_name = 'chatbotresponses'
@@ -70,9 +79,9 @@ def loadDataToFirestore(request):
 
         #=================================#
         #Introducción de pasos del tutorial
-        steps = {1: 1, 1: 2, 3: 5, 4: 3, 5: 3, 6: 1}
+        steps = {1: 1, 2: 2, 3: 5, 4: 3, 5: 3, 6: 1}
         
-        Responses = []
+        responses = []
 
         collection_name = 'chatbotsteps'
         collection_ref = db.collection(collection_name)
@@ -84,9 +93,9 @@ def loadDataToFirestore(request):
                     "Question": f"{step}_{substep}",
                     "Response": f"Paso{step}_Subpaso{substep}.txt"
                 }
-                Responses.append(entry)   
+                responses.append(entry)   
 
-        for response in Responses:
+        for response in responses:
             doc_id = f"{response['IntentName']}_{response['Question']}"
             collection_ref.document(doc_id).set(response)
 
