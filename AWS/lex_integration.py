@@ -102,7 +102,7 @@ def handle_step(event, next_step):
     
     response = []
     
-    for substep in range(step_substep.get(step, 1)):
+    for substep in range(1, step_substep.get(step, 1) + 1):
         file_name = get_step_content(step, substep)
         texto = read_text_file_from_s3(file_name)
         mensaje = {

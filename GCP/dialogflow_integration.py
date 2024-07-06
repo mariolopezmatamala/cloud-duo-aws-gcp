@@ -114,7 +114,7 @@ def handle_step(session_attributes, session, next_step):
 
     response_messages = []
 
-    for substep in range(step_substep.get(step, 1)):
+    for substep in range(1, step_substep.get(step, 1) + 1):
         file_name = get_step_content(step, substep)
         text = read_text_from_file(file_name)
         response_messages.append(text)
