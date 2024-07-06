@@ -117,24 +117,6 @@ def next_step(session_attributes, session):
 
     return build_response(message, session, session_attributes)
 
-def current_step(session_attributes, session):
-    """
-    Repite el contenido del paso y subpaso actuales.
-
-    Parámetros:
-    - session_attributes: Los atributos de la sesión actuales.
-
-    Retorna:
-    - Un diccionario con el mensaje del paso y subpaso actuales y los atributos de la sesión.
-    """
-    step = int(session_attributes.get('step', 1))
-    substep = int(session_attributes.get('substep', 1))
-
-    file_name = get_step_content(step, substep)
-
-    message = read_text_from_file(file_name)
-    
-    return build_response(message, session, session_attributes)
 
 def go_to_step(session_attributes, session):
     """
