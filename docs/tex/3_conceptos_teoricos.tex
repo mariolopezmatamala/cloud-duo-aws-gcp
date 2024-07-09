@@ -1,13 +1,13 @@
 \capitulo{3}{Conceptos teóricos}
 
-Los conceptos teóricos más destacables de este proyecto residen en el procesamiento del lenguaje natural(NLP en adelante) el cual es una subdisciplina de la inteligencia artificial que se dedica a la interacción entre las computadoras y los lenguajes humanos. Su objetivo principal permitira las computadoras comprender, interpretar y generar lenguaje humano.
+Los conceptos teóricos de este proyecto residen en el procesamiento del lenguaje natural(NLP en adelante) el cual es una subdisciplina de la inteligencia artificial que se dedica a la interacción entre las computadoras y los lenguajes humanos. Su objetivo principal permitira las computadoras comprender, interpretar y generar lenguaje humano.
 
 \section{Procesamiento del Lenguaje Natural}\label{NLP}
 
-El estudio del procesamiento del lenguaje natural tiene sus origen en la década de 1950, cuando Alan Turing propuso el Test de Turing como criterio para la inteligencia artificial. Desde entonces, el campo ha evolucionado pasando por varias fases, incluidas las primeras técnicas basadas en reglas, el auge de los modelos estadísticos en la década de 1990 y el aprendizaje profundo.
+El estudio del procesamiento del lenguaje natural tiene sus origen en la década de 1950, cuando Alan Turing propuso el Test de Turing como criterio para la inteligencia artificial. Desde entonces, el campo ha evolucionado pasando por varias fases, incluidas las primeras técnicas basadas en reglas, el auge de los modelos estadísticos en la década de 1990 y el aprendizaje profundo. Los elementos claves para su estudio son:
 
 \begin{itemize}
-    \item \textbf{Tokenización}: El proceso de dividir el texto en unidades más pequeñas llamadas tokens (generalmente palabras o frases).  \citep{jurafsky2020speech}.
+    \item \textbf{Tokenización}: Consiste en el proceso de dividir el texto en unidades más pequeñas llamadas tokens (generalmente palabras o frases) para su posterior análisis de una manera más sencilla.  \citep{jurafsky2020speech}.
     
     \item \textbf{Etiquetado de Partes del Discurso (POS Tagging)}: Asignar etiquetas gramaticales (como sustantivos, verbos, adjetivos) a cada token. Esto ayuda a entender la estructura gramatical del texto \citep{manning2014stanford}.
     
@@ -17,17 +17,17 @@ El estudio del procesamiento del lenguaje natural tiene sus origen en la década
     
     \item \textbf{Análisis de Sentimientos}: Determinar la opinión o el sentimiento expresado en un texto, que puede ser positivo, negativo o neutral. Esta técnica es ampliamente utilizada en el análisis de redes sociales y opiniones de clientes \citep{pang2008opinion}.
     
-    \item \textbf{Traducción Automática}: Convertir texto de un idioma a otro mediante técnicas de NLP. Los modelos modernos de traducción automática utilizan redes neuronales recurrentes y transformadores para mejorar la precisión y fluidez de las traducciones \citep{bahdanau2015neural}.
+    \item \textbf{Traducción Automática}: Convertir texto de un idioma a otro mediante técnicas de NLP. Los modelos modernos de traducción automática utilizan redes neuronales recurrentes y transformadores para generar traducciones de gran precisión \citep{bahdanau2015neural}.
 \end{itemize}
 
 \section{Técnicas avanzadas del NLP}\label{tecnicas-avanzadas}
 En los últimos años, los modelos de \textit{deep learning} han revolucionado el campo del NLP. Entre los más destacados, se encuentran:
 
 \begin{itemize}
-\item \textbf{Redes Neuronales Recurrentes (RNNs)}: Especialmente útiles para datos secuenciales, como texto y habla. Las RNNs pueden recordar información a lo largo de las secuencias de datos\citep{hochreiter1997long}.
-\item \textbf{Long Short-Term Memory (LSTM)}: Una variante de las RNNs que aborda el problema del gradiente desaparecido, permitiendo a los modelos capturar dependencias a largo plazo en los datos de secuencia \citep{hochreiter1997long}.
-\item \textbf{Transformadores:} Introducidos por Vaswani et al. (2017), los transformadores han demostrado ser altamente efectivos en una amplia gama de tareas de NLP. Estos modelos utilizan mecanismos de atención para procesar secuencias de datos de manera más precisa que las RNNs tradicionales. BERT (Bidirectional Encoder Representations from Transformers) y GPT-3 (Generative Pre-trained Transformer 3) son claros ejemplos de estos modelos \citep{vaswani2017attention, devlin2019bert}.
+\item \textbf{Redes Neuronales Recurrentes (RNNs)}: Son redes neuronales especializadas en procesar secuencias de datos, manteniendo información temporal y dependencias a través de sus conexiones recurrentes. A diferencia de las redes neuronales tradicionales, las RNNs pueden recordar información a lo largo de las secuencias de datos gracias a su estructura recurrente. Esto les permite realizar tareas como la generación de texto, la traducción automática y el reconocimiento del habla \citep{hochreiter1997long}.
 
+\item \textbf{Long Short-Term Memory (LSTM)}:Es una variante de las RNNs que aborda el problema del gradiente desaparecido. Las LSTM introducen una estructura de células que permite mantener y actualizar información a lo largo de las secuencias de datos. Esto permite a los modelos capturar dependencias a largo plazo en los datos secuenciales, siendo muy efectivos en tareas de traducción de idiomas y generación de texto \citep{hochreiter1997long}.
+\item \textbf{Transformadores:} Introducidos por Vaswani et al. (2017), los transformadores han demostrado su efectividad en una amplia gama de tareas de NLP, utilizando mecanismos de atención para procesar secuencias de datos de manera más precisa que las RNNs tradicionales. BERT (Bidirectional Encoder Representations from Transformers) y GPT-3 (Generative Pre-trained Transformer 3) son solo algunos ejemplos \citep{vaswani2017attention, devlin2019bert}.
 \item \textbf{Word Embeddings:} Técnicas como Word2Vec y GloVe transforman palabras en vectores numéricos de alta dimensión que capturan semánticas y relaciones sintácticas \citep{mikolov2013efficient, pennington2014glove}.
 \item \textbf{Contextualized Word Representations:} Los modelos como ELMo y BERT generan representaciones de palabras que tienen en cuenta el contexto en el que aparecen, clasificando el texto y evitando la desambiguación semántica. \citep{peters2018deep, devlin2019bert}.
 
@@ -46,6 +46,6 @@ Si en NLP procesan entradas de texto o voz, realizan tokenización, etiquetado d
 \item \textbf{Manejo de Variabilidad del Lenguaje:} Los usuarios pueden expresar la misma intención de muchas maneras diferentes. Los sistemas de NLU deben ser capaces de reconocer sinónimos, variaciones gramaticales y diferentes formas de expresiones para comprender la intención subyacente.
 \end{itemize}
 
-Amazon Lex y Google Cloud Dialogflow son herramientas que utilizan técnicas avanzadas de procesamiento del lenguaje natural (NLP) para interpretar y responder al lenguaje humano. Ambas plataformas se basan en la comprensión del lenguaje natural (NLU) para identificar las intenciones del usuario y proporcionar respuestas contextualmente apropiadas.
+Amazon Lex y Google Cloud Dialogflow son herramientas que utilizan técnicas avanzadas de NLP para interpretar y responder al lenguaje humano. Ambas plataformas se basan en la comprensión del lenguaje natural NLU para identificar las intenciones del usuario y proporcionar respuestas contextualmente apropiadas. Como se verá más adelante, estas serán las principales tareas las cuales realizarán los chatbots.
 
 

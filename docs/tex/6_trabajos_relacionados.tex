@@ -1,2 +1,13 @@
 \capitulo{6}{Trabajos relacionados}
 
+En el ámbito del desarrollo de chatbots, existen numerosos trabajos que se centran en la creación de soluciones sencillas utilizando Lex o DialogFlow. Sin embargo, muchos de estos trabajos se enfocan en un subconjunto específico de servicios y no integran de manera completa todas las capacidades disponibles en AWS. Esta fragmentación de soluciones ha llevado a una necesidad de agrupar y combinar varias implementaciones para lograr un sistema robusto y completo, como el desarrollado en este trabajo.
+
+Por ejemplo, un estudio sobre la creación de un asistente virtual interactivo para la programación utilizando Amazon Lex y Lambda proporciona una pequeña guía sobre cómo construir un chatbot con estos servicios. Sin embargo, este trabajo no integra otros servicios esenciales como Amazon Textract, Amazon Comprehend, o Amazon S3 \citep{online:lex_lambda_c}.
+
+Otro ejemplo, diría que el más relevante, ha sido el proyecto de github sobre la extracción de \textit{insights} de facturas con Amazon Textract, Amazon Comprehend y Amazon Lex, muestra cómo utilizar estos servicios específicos para automatizar el procesamiento de datos textuales y descubrir insights a partir de ellos \citep{online:github_textract}. Si bien este proyecto integra un mayor número de servicios para el chatbot, su funcionalidad es muy limitada proporcionando únicamente datos relevantes de facturas.
+
+Sin embargo, la documentación proporcionada por AWS ha sido lo suficientemente detallada para guiarme en la creación e integración de todos estos servicios \citep{online:aws_docs}. Los tutoriales y guías oficiales de AWS ofrecen ejemplos claros y pasos detallados para implementar cada servicio.
+
+Por el otro lado, el caso de GCP ha sido muy similar. Sin embargo, el principal problema ha sido la complejidad de la documentación que proporciona google, ya que tiende a ser más compleja y extensa \citep{online:google_docs}. A pesar de este obstáculo, una vez que se comprendió el funcionamiento de los servicios de AWS, la transición y aplicación de conocimientos a GCP resultó ser mucho menos complicada.
+
+Por ejemplo, un trabajo sobre la creación de un chatbot utilizando Dialogflow y Google Cloud Functions sería el siguiente, donde se explica la creación y configuración de Dialogflow, muy similar a Amazon Lex \citep{online:gcp_chatbot}.

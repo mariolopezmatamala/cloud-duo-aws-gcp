@@ -1,0 +1,229 @@
+\apendice{Documentación técnica de programación}
+
+\section{Introducción}. 
+ En este anexo se recoge la documentación técnica de programación, que incluye recomendaciones para el entorno de desarrollo, la estructura de directorios,  el diseño, implementación y funcionamiento de la aplicación y del resto de módulos de código.
+
+\section{Estructura de directorios}
+El repositorio (disponible en \url{https://github.com/mariolopezmatamala/cloud-duo-aws-gcp}) se organiza en un total de 4 directorios principales (ver Figura \ref{fig:paquete_general}).
+
+\subsection{Diagramas de paquetes y directorios}
+
+\subsubsection{Directorio general de todo el proyecto. Distribución de paquetes}
+
+\imagen{paquete_general}{Diagrama de paquetes general.}{1}
+
+\subsubsection{Paquete AWS}
+En este paquete se almacenan los archivos correspondientes a las funciones lambda, así como los archivos en formato pdf que deben ser cargados para su extracción de texto.
+
+\imagen{paquete_aws.png}{Diagrama de paquetes AWS.}{1}
+
+\subsubsection{Paquete google cloud}
+
+En este paquete se almacenan los archivos correspondientes a las cloud function de GCP, así como los archivos en formato pdf que deben ser cargados para su extracción de texto.
+
+\imagen{paquete_gcp.png}{Diagrama de paquetes GCP.}{1}
+
+\subsubsection{Paquete docu}
+
+ La documentación del proyecto puede ser consultada en este directorio. Los archivos están distribuidos de la siguiente manera:
+
+\begin{itemize}
+\tightlist
+\item
+\emph{/tex}: recoge los capítulos y apéndices de la memoria y anexos.
+\item
+\emph{/img}: recoge todas las imágenes.
+\end{itemize}
+
+Además, se encuentran los archivos en formato .tex y .pdf de la memoria y los anexos, así como su bibliografía.
+
+\imagen{paquete_docu.png}{Diagrama de paquetes documentación.}{1}
+
+\subsubsection{Paquete webapp}
+
+Los archivos correspondientes a la webapp se encuentran en este paquete. 
+
+\imagen{paquete_webapp.png}{Diagrama de paquetes webapp.}{1}
+
+
+\section{Manual del programador}
+
+Esta sección está destinada a proporcionar información detallada sobre cómo utilizar el programa desarrollado en el proyecto. En él se detallan los pasos más relevantes que se han seguido para la creación y que pueden servir como referencia para futuros desarrolladores tanto para AWS como GCP:
+
+\subsection{Amazon Web Services}
+Para la realización de todos los pasos estaremos utilizando la consola de AWS, se puede acceder desde este enlace: \url{https://aws.amazon.com/es/}
+
+\begin{enumerate}
+    \item \textbf{Creación de la cuenta}
+    
+    Para ello hay que proporcionar un email y un nombre de cuenta. Además, será necesario introducir una forma de pago que será utilizada en caso de que debamos pagar por el uso de los servicios al sobrepasar el límite de su capa gratuita. 
+
+    AWS proporciona diferentes capas gratuitas, algunas están disponibles de forma indefinida, otras tienen una duración de meses o algunas son como pruebas. A continuación, proporciono una tabla de los servicios y su tipo de tarifa para nuevos usuarios (ver tabla \ref{tab:servicios_ofertas}).
+    \begin{table}[h]
+    \centering
+    \begin{tabularx}{\linewidth}{@{}XX@{}}
+        \toprule
+        \textbf{Servicio} & \textbf{Oferta} \\
+        \midrule
+        \textbf{S3} & 
+        12 meses gratis, 5 GB gratis, 20,000 solicitudes gratis \\
+        \midrule
+        \textbf{Lambda} & 
+        1 millón de solicitudes gratis \\
+        \midrule
+        \textbf{SNS} & 
+        1 millón de publicaciones gratis\\
+        \midrule
+        \textbf{Textract} & 
+        1,000 páginas al mes gratis \\
+        \midrule
+        \textbf{Comprehend} & 
+        12 meses gratis, 5 millones de caracteres al mes gratis \\
+        \midrule
+        \textbf{Translate} & 
+        12 meses gratis, 2 millones de caracteres al mes gratis \\
+        \midrule
+        \textbf{DynamoDB} & 
+        25 GB gratis de almacenamiento \\
+        \midrule
+        \textbf{Lex} & 
+        12 meses gratis, 10,000 solicitudes al mes gratis \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Servicios y sus ofertas correspondientes AWS}
+    \label{tab:servicios_ofertas}
+\end{table}
+    Es interesante recalcar que todos los servicios de AWS utilizados en este proyecto han tenido coste cero debido a estas capaz gratuitas.
+
+
+    \item \textbf{Creación del Rol IAM}
+    
+Comenzando a trabajar con los servicios, es necesario configurar un Rol IAM en AWS. Este rol define los permisos que las funciones Lambda necesitarán para interactuar con otros servicios de AWS.
+
+
+Primero, busca el servicio Identity and Access Management (IAM) y crea un nuevo rol en la sección Roles. Yo le he puesto el nombre “AWS\_PDF\_Textract\_Lex\_Role”. En el Paso 1, configura el tipo de entidad de confianza como Servicio de AWS, con el caso de uso Lambda. En el Paso 2, asigna los siguientes permisos: \textit{AmazonS3FullAccess}, \textit{AmazonTextractFullAccess}, \ \textit{AWSLambdaExecute}, \textit{AWSLambdaSNSFullAccess}, \textit{ComprehendFullAccess} y \textit{TranslateFullAccess}. En el Paso 3, elige un nombre para el rol y revisa el resumen de configuración. Finalmente, crea el rol.
+
+Repite estos pasos para crear otro rol con los siguientes permisos, en mi caso lo llamé “AWS\_Lambda\_LexIntegration”: \textit{AmazonDynamoDBFullAccess}, \textit{AmazonS3FullAccess}, \textit{AWSLambdaBasicExecutionRole} y \textit{AmazonLexFullAccess}.
+
+\item \textbf{Creación de un Bucket S3 con dos Carpetas}
+
+El siguiente paso es crear un bucket en Amazon S3 para almacenar los archivos que se procesarán y los resultados. Busca el servicio Amazon S3 y crea un nuevo bucket, eligiendo un nombre y dejando todas las configuraciones por defecto para mayor seguridad. Dentro de este bucket, crea dos carpetas: una para cargar los PDF y otra para almacenar el texto extraído de los PDF en formato TXT.
+
+\item \textbf{Crear un SNS}
+
+Para la mensajería y las notificaciones, utiliza Amazon Simple Notification Service (SNS). Busca el servicio SNS y crea un nuevo tópico, asignándole un nombre y seleccionando el tipo estándar. Deja todas las configuraciones por defecto y crea el tópico.
+
+\item \textbf{Creación de las Funciones Lambda}
+
+En este paso, se crearán tres funciones Lambda que interactuarán con S3, Textract y Lex.
+
+Primero, busca el servicio AWS Lambda y crea una nueva función desde cero. Asigna un nombre a la función y selecciona Python como el lenguaje de tiempo de ejecución, con arquitectura x86\_64. En la sección de permisos, añade el rol IAM “AWS\_PDF\_Textract\_Lex\_Role”. Después de crear la función, ve a la configuración básica y ajusta la memoria a 1GiB, el almacenamiento efímero y el tiempo de espera a 15 minutos. Configura un desencadenador (trigger) para el bucket S3 que hemos creado, especificando el prefijo de la carpeta donde se cargarán los PDF y el sufijo \texttt{.pdf}.
+
+La segunda función Lambda será similar a la primera, pero el desencadenador será el servicio SNS configurado anteriormente. Utiliza el mismo rol IAM que la primera función.
+
+La tercera función Lambda no tendrá un desencadenador y puedes usar la misma configuración básica de las funciones anteriores, exceptuando el rol, que será el “AWS\_Lambda\_LexIntegration”.
+
+\item \textbf{Creación de la Base de Datos}
+
+Ahora vamos a configurar la base de datos donde el chatbot buscará respuestas a las preguntas. Busca el servicio Amazon DynamoDB y crea una nueva tabla. Introduce el nombre de la tabla y establece la clave de partición como \texttt{IntentName}. Esto permitirá recuperar el conjunto de preguntas asociadas a cada intent y proporcionar respuestas precisas. Deja el resto de las configuraciones por defecto y crea la tabla.
+
+Después, crea una función Lambda para cargar los datos en la tabla DynamoDB. El código necesario para esta función se puede encontrar en un enlace de GitHub especificado. Una vez creada la función, realiza una prueba para asegurarte de que los datos se cargan correctamente.
+
+\item \textbf{Creación del Bot}
+
+Para crear el chatbot, accede al servicio AWS Lex y crea un nuevo bot desde cero. Asigna un nombre al bot y deja la configuración de permisos predeterminada, ya que las funciones Lambda previamente creadas serán las que interactúen con los servicios necesarios.
+
+Crea una lista de intents y añade ejemplos de enunciados para cada uno. Configura los hooks de código utilizando las funciones Lambda creadas anteriormente. Los intents iniciales que debes crear incluyen \texttt{StartTutorial}, \texttt{RepeatStep}, \texttt{NextStep} y \texttt{GoToStep}. Añade frases de entrenamiento como “crear un chatbot” o “siguiente paso”.
+
+A continuación, configura los intents correspondientes al banco de preguntas. Asegúrate de utilizar los nombres de intents que coincidan con los utilizados en la función Lambda que carga los datos en DynamoDB, para garantizar la correcta detección y respuesta. Añade también las frases de entrenamiento similares a las preguntas que has introducido en la base de datos.
+
+\item \textbf{Implementación del Chatbot}
+Utilizaremos el servicio de kommunicate para implementarlo. Necesitarás crear un rol de usuario con permisos de Lex, copia el ID y la credencial. Pega estos datos en Kommunicate y crea el bot, cuando te pida el Alias selecciona el borrador. 
+Para implementarlo en tu página web, simplemente copia el codigo script de la instalación.
+
+\end{enumerate}
+
+\subsection{Google Cloud Platform}
+
+Al igual que en AWS, estaremos utilizando la consola que proporciona GCP, sin embargo, también se puede configurar un entorno local para trabajar con los servicios de GCP. \url{https://cloud.google.com/?hl=es}
+
+Los pasos son bastante similares a los de AWS, guardan bastante relación. 
+
+\begin{enumerate}
+    \item \textbf{Creación de la cuenta}
+    
+    Lo primero será empezar creando una cuenta desde la consola.  
+    Se deberá proporcionar un email y un nombre de cuenta. Además, será necesario introducir una forma de pago que será utilizada en caso de que debamos pagar por el uso de los servicios al sobrepasar su capa gratuita.
+
+    GCP también proporciona una capa gratuita de 300USD durante 3 meses. Dentro de esta capa gratuita, también se incluyen varios servicios gratuitos dentro de los cuales se encuentran algunos de los que se usarán (ver tabla (ver tabla \ref{tab:servicios_ofertas_gcp})).
+
+    \begin{table}[ht]
+\centering
+\begin{tabularx}{\linewidth}{lX}
+\toprule
+\textbf{Servicio} & \textbf{Oferta} \\
+\midrule
+\textbf{Cloud Storage} & 
+\begin{itemize}
+    \item 5 GB de almacenamiento al mes
+\end{itemize} \\
+\midrule
+\textbf{Firestore} & 
+\begin{itemize}
+    \item 1 GB de almacenamiento
+\end{itemize} \\
+\midrule
+\textbf{Cloud Functions} & 
+\begin{itemize}
+    \item 2 millones de llamadas
+\end{itemize} \\
+\bottomrule
+\end{tabularx}
+\caption{Servicios y sus ofertas correspondientes en GCP}
+\label{tab:servicios_ofertas_gcp}
+\end{table}
+
+    Para el resto de servicios, el precio por su uso se descontará desde los 300USD que proporciona GCP.
+
+    \nota{Es importante activar la cuenta antes de que terminen los tres meses de prueba, de lo contrario se perderá todo el trabajo realizado}
+
+\item \textbf{Creación del Proyecto}
+
+Para poder empezar a trabajar se debe crear un proyecto nuevo en la consola de Google Cloud. Al acceder a la consola, se presenta la opción de crear un nuevo proyecto. Es importante guardar el ID del proyecto, ya que puede ser necesario más adelante para configurar el entorno virtual.
+
+\item \textbf{Creación del Storage}
+
+El primer paso es crear un bucket en el servicio Cloud Storage. Se debe configurar el nombre del bucket y la región deseada, dejando el resto de las configuraciones en su estado predeterminado. Una vez creado el bucket, se deben crear dos carpetas dentro de él: una para los archivos PDF que se desean procesar y otra para almacenar los archivos TXT con el texto extraído.
+
+\item \textbf{ Creación de Document AI}
+
+A continuación, se configura el servicio Document AI. Al acceder a este servicio, se solicita habilitar la API correspondiente. Después, se procede a crear un procesador, eligiendo el tipo Document OCR para realizar la extracción de texto. Se le asigna un nombre y una región al procesador. Es recomendable mantener la misma región para todos los servicios relacionados con el proyecto. Una vez configurado, se puede probar subiendo un documento de prueba para verificar su correcto funcionamiento.
+
+\item \textbf{Creación de las Cloud Functions}
+
+En este paso, se crean tres funciones Cloud Functions, cada una con un propósito específico: extraer texto, procesar el texto y gestionar la interacción con DialogFlow.
+
+La primera función se encarga de la extracción de texto. Se selecciona el entorno de 1ª generación por su estabilidad. Se configura el nombre y la región, y se establece como activador Cloud Storage con tipo de evento "finalized". Se ajustan los recursos de memoria, CPU y tiempo de espera para asegurar la finalización de la tarea. También se asigna la cuenta de servicio del proyecto.
+
+Antes de configurar las otras funciones, se crea una cola en el servicio Cloud Tasks para gestionar las notificaciones. Se habilita la API de Cloud Tasks y se configura el nombre y la región de la cola.
+
+La segunda función se activa mediante una notificación HTTP enviada por la primera función. Esta función realiza la tarea de procesar el texto, para lo cual necesita habilitar las API de Cloud Natural Language y Cloud Translate.
+
+La tercera función se encarga de la integración con el bot de DialogFlow. Esta función se configura de manera similar a las anteriores, pero con el propósito específico de gestionar la interacción con DialogFlow.
+
+\item \textbf{Creación de la Base de Datos}
+
+Para almacenar el banco de preguntas y respuestas del chatbot, se utiliza Firestore. Se selecciona el modo Nativo y se asigna un nombre, dejando el resto de configuraciones por defecto. Una vez creada la base de datos, se añaden dos colecciones: una para el banco de preguntas y respuestas (\texttt{chatbotresponses}) y otra para los pasos de creación del chatbot (\texttt{chatbotsteps}).
+
+\item \textbf{Configuración de DialogFlow ES}
+
+Se utiliza DialogFlow ES (Essentials) para configurar el bot. En la consola de DialogFlow, se crean los intents necesarios, añadiendo frases de entrenamiento y habilitando la opción "Enable webhook call for this intent" en el fulfilment.
+
+Los intents iniciales incluyen \texttt{StartTutorial}, \texttt{RepeatStep}, \texttt{NextStep} y \texttt{GoToStep}, con frases de entrenamiento como “crear un chatbot” o “siguiente paso”. También se configuran los intents correspondientes al banco de preguntas, utilizando los nombres de intents que recibe la Cloud Function y añadiendo frases de entrenamiento similares a las preguntas almacenadas en la base de datos.
+
+\item \textbf{Implementación del Chatbot}
+
+Finalmente, se implementa el chatbot en una página web. En la consola de DialogFlow, se navega a la configuración del bot y se añade una descripción. En el apartado de “Integrations” -> “Web demo”, se copia el código \texttt{<iframe>} y se inserta en la página web.
+
+
+\end{enumerate}

@@ -1,11 +1,11 @@
 \capitulo{4}{Técnicas y herramientas}
 
-\section{Técnicas metodológicas}\label{metodologias}
+\section{Metodología de trabajo}\label{metodologias}
 
 \subsection{Desarrollo Iterativo con Scrum}\label{scrum}
 Scrum es un marco de trabajo relativamente estructurado con roles específicos dentro de la metodología Agile, entre los cuales destacan el Product Owner, el Scrum Master y el desarrollador. Este marco se puede utilizar tanto para la gestión de proyectos como para el desarrollo de productos, especialmente en el despliegue de software. Con Scrum, los proyectos se dividen en iteraciones cortas llamadas sprints.
 
-Se ha optado por esta metodología debido a su alta adaptabilidad y su capacidad para generar entregas tempranas de valor. Con Scrum, se obtienen productos viables y evaluables por el usuario final desde las primeras fases del proyecto, lo que permite realizar ajustes y mejoras continuas basadas en el feedback recibido.
+Se ha optado por esta metodología debido a su alta adaptabilidad y su capacidad para generar entregas tempranas de valor. Con Scrum, se obtienen productos viables y evaluables por el usuario final desde las primeras fases del proyecto, lo que permite realizar ajustes y mejoras continuas basadas en el feedback recibido. También destaca por su idoneidad a la hora de enfrentarse a nuevos desarrollos. 
 
 
 \section{Control de versiones}\label{control_versiones}
@@ -18,6 +18,15 @@ Herramientas consideradas: Git \citep{online:git}, GitHub Desktop \citep{online:
 Git y GitHub Desktop son herramientas relacionadas con el control de versiones.
 
 Una de las ventajas de Git es que permite a cada desarrollador tener una copia local del repositorio completo y, aunque puede ser menos eficiente para proyectos muy grandes, es más sencillo de utilizar para proyectos pequeños. Además, el sistema de ramificación de Git es más intuitivo y facilita la tarea de los desarrolladores. GitHub Desktop, por otro lado, proporciona una interfaz gráfica amigable para interactuar con Git, haciendo que las operaciones de control de versiones sean más accesibles para aquellos que prefieren no trabajar con la línea de comandos.
+
+En mi proyecto, he trabajado con una única rama en el repositorio de control de versiones. Sin embargo, en la mayoría de los proyectos de desarrollo de software se suele trabajar con varias ramas para organizar el trabajo. 
+
+\begin{itemize}
+\item \textbf{Rama principal (main o master):} Esta es la rama principal del repositorio. Contiene el código fuente en estado estable y listo para producción. Todo el trabajo que se realiza en otras ramas se integra en esta rama una vez que ha sido revisado y probado.
+\item \textbf{Rama de desarrollo (develop):} Esta rama contiene el código en el que se está trabajando activamente. Es la rama donde se integran todas las nuevas características y correcciones antes de ser fusionadas con la rama principal. Se utiliza para pruebas y revisiones antes de pasar a producción.
+
+\item \textbf{Ramas de características (feature branches):} Estas ramas se crean a partir de la rama de desarrollo para trabajar en nuevas funcionalidades específicas. Una vez que la característica está completa y ha sido probada, se fusiona de nuevo en la rama de desarrollo. 
+\end{itemize}
 
 \section{Alojamiento del repositorio}\label{alojamiento_repositorio}
 \begin{itemize}
@@ -35,22 +44,26 @@ He decidido utilizar Github dado que lo conozco bastante bien, porque se utiliza
 \begin{itemize}
 \tightlist
 \item
-  Herramientas consideradas: email, GitHub y Microsoft Teams \citep{online:ms_teams}.
+  Herramientas consideradas: email, GitHub y Microsoft Teams.
 \item
   Herramientas elegidas: email y Microsoft Teams. 
 \end{itemize}
+
+La comunicación con el tutor se desarrolló mediante reuniones periódicas en Microsoft Teams, así como mediante correos electrónicos.  
 
 \section{Entorno de desarrollo integrado (IDE)}\label{ide}
 \begin{itemize}
 \tightlist
 \item
-  Herramientas consideradas: Sublime Text \citep{online:sublime_text}, Visual Studio Code \citep{online:vs_code}.
+  Herramientas consideradas: Sublime Text \citep{online:sublime}, Visual Studio Code \citep{online:vs_code}.
 \item
   Herramienta elegida: Visual Studio Code. 
 \end{itemize}
 
 He utilizado Visual Studio Code para probar a trabajar con un entorno virtual en mi propia máquina, invocando a los servicios en la nube de GCP. Sin embargo, esto no es necesario ya que se pueden utilizar perfectamente dentro de su propia consola.
 
+\section{Integración y despliegue continuo(CI/CD)}
+En este proyecto no se ha seguido ningún proceso de automatización durante el proceso de compilación y despliegue del software. 
 
 \section{Documentación de la memoria}\label{editor_texto}
 \begin{itemize}
@@ -87,6 +100,15 @@ de \emph{Python}.
 Se ha escogido \emph{Pylint} frente a \emph{Flake8} porque, adicionalmente, permite medir la calidad del código en términos de complejidad y legibilidad, lo que favorece un mantenimiento posterior. Además, con \emph{Pylint} podemos hacer informes que señalan todos los fallos, 
 aumentando la productividad.
 
+Durante el desarrollo del proyecto, se utilizaron ciertas exclusiones en Pylint para evitar advertencias que no eran relevantes. Las exclusiones específicas son las siguientes:
+
+\begin{itemize}
+    \item \textbf{C0303 (Trailing Whitespace):} Esta advertencia se refiere a espacios en blanco al final de las líneas de código. Se deshabilitó para evitar múltiples advertencias por un detalle menor que no afecta la ejecución del código.
+    
+    \item \textbf{C0301 (Line Too Long):} Esta advertencia se genera cuando una línea de código supera la longitud máxima recomendada (normalmente 80 o 100 caracteres). Se deshabilitó porque en ciertos casos las líneas tienen que ser lo bastante largas, en especial en la carga de datos a la base de datos.
+    
+    \item \textbf{E0401 (Import Error):} Esta advertencia se genera cuando Pylint no puede encontrar un módulo importado. Se deshabilitó para evitar falsos positivos, especialmente al importar módulos no instalados en mi entorno ya que se estaban usando dentro de los servicios de AWS y GCP.
+\end{itemize}
 
 \section{Cobertura de código}\label{cobertura_codigo}
 \begin{itemize}
@@ -94,15 +116,13 @@ aumentando la productividad.
 \item
   Herramientas consideradas: Coverage  \citep{online:coverage} y Pytest-cov \citep{online:pytest_cov}.
 \item
-  Herramienta elegida: Coverage.
+  Herramienta elegida: Ninguna.
 \end{itemize}
 
-\emph{Coverage} es una herramienta que permite medir la cobertura de código en \emph{Python}. 
+\emph{Coverage} es una herramienta que permite medir la cobertura de código en \emph{Python}. Uno de los aspectos relevantes de \emph{coverage} es que, con pocos comandos, permite generar
+un informe \textit{HTML} muy intuitivo que guía al desarrollador hacia los fallos detectados. 
 
-Uno de los aspectos relevantes de \emph{coverage} es que, con pocos comandos, permite generar
-un informe HTML muy intuitivo que guía al desarrollador hacia los fallos detectados. 
-
-
+Sin embargo, en este proyecto no se han generado tests debido a la naturaleza del proyecto. Con lo cual, no se ha hecho uso de esta herramienta.
 
 
 

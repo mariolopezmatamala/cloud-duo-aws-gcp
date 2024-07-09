@@ -1,0 +1,346 @@
+\apendice{Especificación de Requisitos}
+
+\section{Introducción}
+
+Para llevar a cabo el proyecto adecuadamente, se realizará un análisis exhaustivo de los requisitos funcionales y no funcionales de la aplicación. En la sección de Objetivos generales (Seccion \ref{sec:Objetivos generales}) se establecerán los resultados esperados y los criterios de éxito del proyecto. Seguidamente, se presentará el catálogo de requisitos (sección \ref{sec:Catálogo de requisitos}), detallando las funcionalidades y características que la aplicación debe cumplir. Finalmente, se procederá a la especificación de requisitos (sección \ref{sec:Especificación de requisitos}), describiendo cada uno de los identificados en el catálogo y estableciendo su prioridad, complejidad y dependencias.
+
+Se han seguido las recomendaciones del estándar IEEE 830-1998\citep{1998IEEESpecifications} como guía de buenas prácticas. Se ha tratado de crear una especificación de requisitos
+ que cumpla con las siguientes condiciones:
+
+\begin{itemize}
+\tightlist
+\item
+	Modificabilidad y jerarquización
+	\begin{itemize}
+	\item 
+	Ser fácil de modificar.
+	\item
+	Establecer una jerarquía de prioridades basada en la relevancia para el negocio o propósito.
+	\end{itemize}
+\item
+	Verificabilidad y rastreabilidad
+	\begin{itemize}
+	\item 
+	Deberá existir un método finito y sin costo para verificar los requisitos.
+	\item
+	Emplear términos y definiciones claras.
+	\end{itemize}
+\item
+	Integridad y coherencia
+	\begin{itemize}
+	\item 
+	Esencial incluir todos los requisitos y referencias pertinentes.
+	\item
+	Mantener la coherencia con los propios requisitos y otros documentos de especificación.
+	\end{itemize}
+ \item
+	Correctitud y accesibilidad
+	\begin{itemize}
+	\item 
+	Asegurar que el software cumpla con los requisitos especificados.
+	\item
+	Facilitar la accesibilidad y la comprensión tanto para los usuarios como para los desarrolladores.
+	\end{itemize}
+
+ \item
+	Claridad y precisión
+	\begin{itemize}
+	\item 
+	Redactar de manera clara para evitar malentendidos.
+	\item
+	Utilizar términos y definiciones precisas.
+	\end{itemize}
+
+\end{itemize}
+
+El presente informe tiene como objetivo establecer las bases y directrices esenciales para el desarrollo exitoso de una aplicación web, ofreciendo a los usuarios información relevante sobre el impacto de las revistas científicas, con el fin de facilitar decisiones informadas en el ámbito de la publicación académica.
+
+
+\section{Objetivos generales}\label{sec:Objetivos generales}
+
+Este trabajo persigue los siguientes objetivos generales:
+
+\begin{itemize}
+    \item Desarrollar dos chatbots funcionales utilizando los servicios en la nube de AWS y GCP.
+    \item Emplear técnicas de procesamiento de lenguaje natural.
+    \item Utilizar servicios para extraer y analizar texto.
+    \item Implementar y evaluar el uso del paradigma serverless utilizando AWS Lambda y Google Cloud Functions.
+\end{itemize}
+
+El objetivo final de este proyecto es desarrollar y comparar dos chatbots utilizando los servicios de AWS y GCP para identificar la plataforma más adecuada en términos de funcionalidad, rendimiento, escalabilidad y experiencia del usuario, proporcionando una guía detallada para futuros desarrollos de chatbots en entornos empresariales.
+
+\section{Catálogo de requisitos}\label{sec:Catálogo de requisitos}
+
+\subsection{Requisitos funcionales}
+
+Los requisitos funcionales describen las funciones y capacidades específicas que debe cumplir el sistema:
+
+\begin{itemize}
+\item \textbf{RF1: Extracción de Texto}
+    \begin{itemize}
+        \item \textbf{RF1.1}: El sistema debe permitir la subida de documentos a procesar en los servicios de almacenamiento (Amazon S3 en AWS y Cloud Storage en GCP).
+        \item \textbf{RF1.2}: El sistema debe ser capaz de extraer texto de los documentos utilizando Amazon Textract (AWS) y Document AI (GCP).
+        \item \textbf{RF1.3}: El sistema debe ser capaz de aceptar texto subido en diferentes disposición, como en columnas, y ser ordenado correctamente en AWS.
+    \end{itemize}
+    
+    \item \textbf{RF2: Análisis y Traducción de Texto}
+    \begin{itemize}
+        \item \textbf{RF2.1}: El sistema debe analizar el texto extraído para detectar el idioma utilizando Amazon Comprehend (AWS) y Cloud Language (GCP).
+        \item \textbf{RF2.2}: El sistema debe traducir el texto analizado a un idioma especificado utilizando Amazon Translate (AWS) y Cloud Translate (GCP).
+    \end{itemize}
+
+    \item \textbf{RF3: Gestión de Tareas y Notificaciones}
+    \begin{itemize}
+        \item \textbf{RF3.1}: El sistema debe gestionar y coordinar las tareas de extracción, análisis y traducción utilizando AWS SNS y Cloud Tasks.
+    \end{itemize}
+       
+    \item \textbf{RF4: Almacenamiento de Resultados}
+    \begin{itemize}
+        \item \textbf{RF4.1}: El sistema debe almacenar los resultados del análisis y la traducción en Amazon S3 (AWS) y Google Cloud Storage (GCP).
+        \item \textbf{RF4.2}: Los resultados deben ser accesibles por el chatbot en Lex (AWS) y DialogFlow (GCP).
+    \end{itemize}
+    
+    \item \textbf{RF5: Interacción con Chatbot}
+    \begin{itemize}
+        \item \textbf{RF5.1}: El sistema debe permitir la interacción con los usuarios a través de chatbots desarrollados con Amazon Lex (AWS) y Dialogflow (GCP).
+        \item \textbf{RF5.2}: El chatbot debe poder responder preguntas relacionadas con el contenido extraído y analizado.
+        \item \textbf{RF5.3}: El sistema debe definir intents específicos en Amazon Lex y Dialogflow para manejar diferentes tipos de consultas, como:
+        \begin{itemize}
+            \item \textbf{RF5.3.1}: Intents para preguntas sobre los pasos de creación del chatbot.
+            \item \textbf{RF5.3.2}: Intents para preguntas generales.
+        \end{itemize}
+    \end{itemize}
+    
+\end{itemize}
+
+
+\subsection{Requisitos no funcionales}
+
+Los requisitos no funcionales describen los atributos de calidad y restricciones del sistema:
+
+\begin{itemize}
+    \item \textbf{RNF1: Mantenibilidad}
+    \begin{itemize}
+        \item \textbf{RNF1.1}: El código fuente de la aplicación debe estar bien estructurado, modularizado y documentado.
+        \item \textbf{RNF1.2}: El código debe seguir las mejores prácticas de desarrollo de \textit{software} y ser fácilmente mantenible y escalable.
+        \item \textbf{RNF1.3}: El sistema debe permitir actualizaciones y mantenimiento sin causar interrupciones significativas en el servicio.
+    \end{itemize}
+  
+    \item \textbf{RNF2: Seguridad y Escalabilidad}
+    \begin{itemize}
+        \item \textbf{RNF2.1}: El sistema debe garantizar la seguridad y privacidad de los datos personales que introduzca el usuario, implementando medidas de protección adecuadas.
+        \item \textbf{RNF2.2}: La aplicación debe protegerse contra ataques de fuerza bruta sobreutilizando los servicios.
+        \item \textbf{RNF2.3}: El sistema debe ser escalable para manejar un número creciente de documentos y usuarios sin degradar el rendimiento.
+        \item \textbf{RNF2.4}: Las comunicaciones entre los componentes del sistema deben estar restringidas para evitar el acceso no autorizado a los servicios.
+    \end{itemize}
+  
+    \item \textbf{RNF3: Disponibilidad y Rendimiento}
+    \begin{itemize}
+        \item \textbf{RNF3.1}: El sistema debe estar disponible al menos el 99.9\% del tiempo para asegurar la fiabilidad del servicio.
+        \item \textbf{RNF3.2}: El sistema debe procesar los documentos y responder a las consultas del chatbot en un tiempo razonable, minimizando la latencia.
+        \item \textbf{RNF3.3}: La aplicación debe ser capaz de manejar de manera eficiente la carga de usuarios concurrentes utilizando el chatbot.
+        \item \textbf{RNF3.4}: Las consultas a la base de datos deben optimizarse para proporcionar respuestas rápidas a los usuarios.
+    \end{itemize}
+  
+    \item \textbf{RNF4: Usabilidad}
+    \begin{itemize}
+        \item \textbf{RNF4.1}: La interfaz de usuario debe ser intuitiva y fácil de usar para los usuarios.
+        \item \textbf{RNF4.2}: Los mensajes de error deben ser claros y descriptivos, brindando orientación sobre cómo solucionar los problemas.
+    \end{itemize}
+  
+    \item \textbf{RNF5: Compatibilidad}
+    \begin{itemize}
+        \item \textbf{RNF5.1}: El sistema debe ser compatible con diferentes tipos de documentos y formatos para asegurar su versatilidad.
+        \item \textbf{RNF5.2}: La aplicación debe ser compatible con múltiples navegadores y dispositivos para garantizar una experiencia de usuario coherente.
+    \end{itemize}
+\end{itemize}
+
+\section{Especificación de requisitos}
+\label{sec:Especificación de requisitos}
+
+\subsection{Actores}
+Antes de comenzar con los casos de uso, se identifican los diferentes actores que pueden interactuar con la aplicación. Estos son:
+\begin{itemize}
+    \item \textbf{Usuario}: Referido a una persona que desde la página web donde está desplegado el chatbot, hace uso de este.
+    \item \textbf{Administrador}: Usuario con priviliegios de acceso a la cuenta de AWS y/o GCP donde puede acceder a los servicios y trabajar con ellos.
+\end{itemize}
+
+\subsection{Casos de uso}\label{casos_uso}
+
+Se han identificado los siguientes casos de uso:
+
+\begin{itemize}
+    \item \textbf{CU-1 Subida de Documentos}
+    \item \textbf{CU-2 Extracción de Texto}
+    \item \textbf{CU-3 Análisis y Traducción de Texto}
+    \item \textbf{CU-4 Gestión de Tareas y Notificaciones}
+    \item \textbf{CU-5 Interacción con el Chatbot}
+\end{itemize}
+
+\begin{table}[p]
+\centering
+\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+\toprule
+\textbf{CU-1} & \textbf{Subida de Documentos} \\
+\toprule
+\textbf{Versión} & 1.0 \\
+\textbf{Autor} & Mario Lopez Matamala \\
+\textbf{Requisitos asociados} & RF1, RF1.1 \\
+\textbf{Descripción} & Este caso de uso describe el proceso de subir documentos al sistema para su posterior procesamiento. \\
+\textbf{Precondición} & El administrador debe tener acceso al sistema y el documento debe estar en un formato PDF. \\
+\textbf{Acciones} &
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item El administrador accede al servicio en la nube de AWS y GCP.
+\item El administrador selecciona el documento a subir.
+\item El administrador confirma la subida del documento.
+\item El sistema sube el documento a Amazon S3 (AWS) o Cloud Storage (GCP).
+\end{enumerate} \\
+\textbf{Postcondición} & El documento está almacenado en el servicio de almacenamiento correspondiente. \\
+\textbf{Excepciones} &
+\begin{itemize}
+\item Si hay problemas de conexión, se muestra un mensaje de error y se pide al usuario que intente nuevamente.
+\end{itemize} \\
+\textbf{Importancia} & Alta \\
+\bottomrule
+\end{tabularx}
+\caption{CU-1 Subida de Documentos}
+\label{tab:cu1}
+\end{table}
+
+\vspace{1cm}
+
+\begin{table}[p]
+\centering
+\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+\toprule
+\textbf{CU-2} & \textbf{Extracción de Texto} \\
+\toprule
+\textbf{Versión} & 1.0 \\
+\textbf{Autor} & Mario Lopez Matamala \\
+\textbf{Requisitos asociados} & RF1, RF1.2, RF1.3 \\
+\textbf{Descripción} & Este caso de uso describe el proceso de extracción de texto de documentos subidos. \\
+\textbf{Precondición} & El documento debe estar subido al sistema. \\
+\textbf{Acciones} &
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item El sistema detecta un nuevo documento subido en el bucket
+\item El bucket desencadena la función lambda.
+\item El sistema utiliza Amazon Textract (AWS) o Document AI (GCP) para extraer el texto del documento mediante la función lambda.
+\item El sistema trata correctamente el texto extraído.
+\end{enumerate} \\
+\textbf{Postcondición} & El texto ha sido extraído y se encuentra listo para ser tratado.\\
+\textbf{Excepciones} &
+\begin{itemize}
+\item Si el texto no puede ser extraído, se notifica al administrador.
+\end{itemize} \\
+\textbf{Importancia} & Alta \\
+\bottomrule
+\end{tabularx}
+\caption{CU-2 Extracción de Texto}
+\label{tab:cu2}
+\end{table}
+
+\vspace{1cm}
+
+\begin{table}[p]
+\centering
+\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+\toprule
+\textbf{CU-3} & \textbf{Análisis y Traducción de Texto} \\
+\toprule
+\textbf{Versión} & 1.0 \\
+\textbf{Autor} & Mario Lopez Matamala \\
+\textbf{Requisitos asociados} & RF2, RF2.1, RF2.2 \\
+\textbf{Descripción} & Este caso de uso describe el proceso de análisis y traducción del texto extraído de documentos. \\
+\textbf{Precondición} & El texto debe haber sido extraído del documento. \\
+\textbf{Acciones} &
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item El sistema analiza el texto extraído para detectar el idioma utilizando Amazon Comprehend (AWS) o Cloud Language (GCP).
+\item El sistema traduce el texto al idioma especificado utilizando Amazon Translate (AWS) o Cloud Translate (GCP).
+\end{enumerate} \\
+\textbf{Postcondición} & El texto ha sido analizado y traducido correctamente. \\
+\textbf{Excepciones} &
+\begin{itemize}
+\item Si el idioma no puede ser detectado, se notifica al administrador del fallo.
+\item Si la traducción falla, se notifica al administrador.
+\end{itemize} \\
+\textbf{Importancia} & Alta \\
+\bottomrule
+\end{tabularx}
+\caption{CU-3 Análisis y Traducción de Texto}
+\label{tab:cu3}
+\end{table}
+
+\vspace{1cm}
+
+\begin{table}[p]
+\centering
+\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+\toprule
+\textbf{CU-4} & \textbf{Gestión de Tareas y Notificaciones} \\
+\toprule
+\textbf{Versión} & 1.0 \\
+\textbf{Autor} & Mario Lopez Matamala \\
+\textbf{Requisitos asociados} & RF3, RF3.1 \\
+\textbf{Descripción} & Este caso de uso describe cómo el sistema gestiona y coordina las tareas de extracción, análisis y traducción de texto, y envía notificaciones sobre el estado de estas tareas. \\
+\textbf{Precondición} & Las tareas de extracción, análisis y traducción deben estar en curso. \\
+\textbf{Acciones} &
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item El sistema utiliza AWS SNS o Cloud Tasks para gestionar y coordinar las tareas.
+\end{enumerate} \\
+\textbf{Postcondición} & La notificación ha sido enviada. \\
+\textbf{Excepciones} &
+\begin{itemize}
+\item Si alguna tarea falla, se envía una notificación de error al administrador.
+\end{itemize} \\
+\textbf{Importancia} & Alta \\
+\bottomrule
+\end{tabularx}
+\caption{CU-4 Gestión de Tareas y Notificaciones}
+\label{tab:cu4}
+\end{table}
+
+\vspace{1cm}
+
+\begin{table}[p]
+\centering
+\begin{tabularx}{\linewidth}{ p{0.21\columnwidth} p{0.71\columnwidth} }
+\toprule
+\textbf{CU-5} & \textbf{Interacción con el Chatbot} \\
+\toprule
+\textbf{Versión} & 1.0 \\
+\textbf{Autor} & Mario Lopez Matamala \\
+\textbf{Requisitos asociados} & RF5, RF5.1, RF5.2, RF5.3 \\
+\textbf{Descripción} & Este caso de uso describe cómo los usuarios interactúan con el chatbot para obtener información sobre el contenido extraído y analizado. \\
+\textbf{Precondición} & El usuario debe haber establecido una sesión con el chatbot. \\
+\textbf{Acciones} &
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item El usuario hace preguntas sobre el tema o pide al chatbot los pasos de creación.
+\item El chatbot responde utilizando la información almacenada en Amazon S3 (AWS) o Google Cloud Storage (GCP) y las bases de datos.
+\item El chatbot maneja diferentes tipos de consultas utilizando intents definidos en Amazon Lex (AWS) o Dialogflow (GCP).
+\end{enumerate} \\
+\textbf{Postcondición} & El usuario ha recibido la información solicitada a través del chatbot. \\
+\textbf{Excepciones} &
+\begin{itemize}
+\item Si el chatbot no puede responder la pregunta, se notifica al usuario que no se ha encontrado una respuesta.
+\end{itemize} \\
+\textbf{Importancia} & Alta \\
+\bottomrule
+\end{tabularx}
+\caption{CU-5 Interacción con el Chatbot}
+\label{tab:cu5}
+\end{table}
+
+Para poder visualizar los casos de uso se ha incluido un diagrama de casos de uso (ver Figura \ref{fig:CasosdeUso}).
+
+\imagen{CasosdeUso}{Casos de uso. Fuente: elaboración propia}{1}
+

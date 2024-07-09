@@ -1,25 +1,31 @@
-% ORIGINAL:
 \documentclass[a4paper,12pt,twoside]{memoir}
-%\documentclass[a4paper,12pt,oneside]{memoir}
 
 % Castellano
 \usepackage[spanish,es-tabla]{babel}
 \selectlanguage{spanish}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{lmodern} % Scalable font
+\usepackage{lmodern} % scalable font
 \usepackage{microtype}
 \usepackage{placeins}
-% Para imágenes flotantes
-\usepackage{float}
+\usepackage{acronym}
 
 \RequirePackage{booktabs}
 \RequirePackage[table]{xcolor}
 \RequirePackage{xtab}
 \RequirePackage{multirow}
 
-% Para ajustar páginas al ancho de la página
-\usepackage{tabularx}
+\usepackage{tabularx} 
+\usepackage{booktabs} 
+\usepackage{geometry}
+
+
+% Landscape
+\usepackage{pdflscape}
+
+% Configuración para que el entorno Verbatim ajuste las líneas automáticamente
+\usepackage{fvextra}
+\DefineVerbatimEnvironment{verbatim}{Verbatim}{breaklines=true}
 
 % Links
 \PassOptionsToPackage{hyphens}{url}\usepackage[colorlinks]{hyperref}
@@ -27,13 +33,14 @@
 	allcolors = {red}
 }
 
-% Ecuaciones
-\usepackage{amsmath}
 
 % Bibliografía (mejor natbib que biblatex. Con [numbers, sort] indico que
 % se numeren las referencias y que se ordenen según el orden de citación)
 % \usepackage[numbers]{natbib}
 \usepackage[sort,square,numbers,comma]{natbib}
+
+% Ecuaciones
+\usepackage{amsmath}
 
 % Rutas de fichero / paquete
 \newcommand{\ruta}[1]{{\sffamily #1}}
@@ -45,7 +52,69 @@
 \widowpenalty100000
 \clubpenalty100000
 
-% Imágenes
+% Evitar solapes en el header
+\nouppercaseheads
+
+% Imagenes
+%\usepackage{graphicx}
+%\newcommand{\imagen}[2]{
+%	\begin{figure}[!h]
+%		\centering
+%		\includegraphics[width=0.9\textwidth]{#1}
+%		\caption{#2}\label{fig:#1}
+%	\end{figure}
+%	\FloatBarrier
+%}
+
+\newcommand{\imagenflotante}[2]{
+	\begin{figure}%[!h]
+		\centering
+		\includegraphics[width=0.9\textwidth]{#1}
+		\caption{#2}\label{fig:#1}
+	\end{figure}
+}
+
+% Para insertar una imagen sobrepasando los márgenes
+\usepackage[export]{adjustbox}
+\newcommand{\imagenSinMargen}[2]{
+    \begin{figure}[!h]
+        \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{#1}} % Ajusta el ancho para sobresalir ambos márgenes
+        \caption{#2}\label{fig:#1}
+    \end{figure}
+    \FloatBarrier
+}
+
+\newcommand{\imagenSinMargenSubsection}[3]{
+    \begin{figure}[!h]
+        \subsection*{#1} % Añade un título superior sin numerar
+        \makebox[\textwidth][c]{\includegraphics[width=1.4\textwidth]{#2}} % Ajusta el ancho para sobresalir ambos márgenes
+        \caption{#3}\label{fig:#2}
+    \end{figure}
+    \FloatBarrier
+}
+
+\newcommand{\imagenSinMargenSeccionYSubseccion}[4]{
+    \section{#1} % Añade una sección
+    \subsection{#2} % Añade una subsección
+    \begin{figure}[!h]
+        \makebox[\textwidth][c]{\includegraphics[width=1.2\textwidth]{#3}} % Ajusta el ancho para sobresalir ambos márgenes
+        \caption{#4}\label{fig:#3}
+    \end{figure}
+    \FloatBarrier
+}
+
+
+\newcommand{\imagenSinMargenSubsectionApasiada}[3]{
+	\begin{landscape}
+    	\begin{figure}[!h]
+        	\subsection*{#1} % Añade un título superior sin numerar
+        	\makebox[\textwidth][c]{\includegraphics[width=1.6\textwidth]{#2}} % Ajusta el ancho para sobresalir ambos márgenes
+        	\caption{#3}\label{fig:#2}
+    	\end{figure}
+    \end{landscape}
+    \FloatBarrier
+}
+
 
 % Comando para insertar una imagen en un lugar concreto.
 % Los parámetros son:
@@ -62,22 +131,9 @@
 	\FloatBarrier
 }
 
-% Comando para insertar una imagen sin posición.
-% Los parámetros son:
-% 1 --> Ruta absoluta/relativa de la figura
-% 2 --> Texto a pie de figura
-% 3 --> Tamaño en tanto por uno relativo al ancho de página
-\newcommand{\imagenflotante}[3]{
-	\begin{figure}
-		\centering
-		\includegraphics[width=#3\textwidth]{#1}
-		\caption{#2}\label{fig:#1}
-	\end{figure}
-}
-
 % El comando \figura nos permite insertar figuras comodamente, y utilizando
 % siempre el mismo formato. Los parametros son:
-% 1 --> Porcentaje del ancho de página que ocupará la figura (de 0 a 1)
+% 1 -> Porcentaje del ancho de página que ocupará la figura (de 0 a 1)
 % 2 --> Fichero de la imagen
 % 3 --> Texto a pie de imagen
 % 4 --> Etiqueta (label) para referencias
@@ -118,59 +174,25 @@
 %
 % Nuevo comando para tablas pequeñas (menos de una página).
 \newcommand{\tablaSmall}[5]{%
- \begin{table}
-  \begin{center}
-   \rowcolors {2}{gray!35}{}
-   \begin{tabular}{#2}
-    \toprule
-    #4
-    \otoprule
-    #5
-    \bottomrule
-   \end{tabular}
-   \caption{#1}
-   \label{tabla:#3}
-  \end{center}
- \end{table}
-}
-
-% Nuevo comando para tablas pequeñas (menos de una página).
-% con posición fija
-\newcommand{\tablaSmallConPosicion}[5]{%
  \begin{table}[H]
   \begin{center}
-   \rowcolors {2}{gray!35}{}
+   \rowcolors{2}{gray!35}{}
    \begin{tabular}{#2}
-    \toprule
-    #4
-    \otoprule
-    #5
-    \bottomrule
-   \end{tabular}
-   \caption{#1}
-   \label{tabla:#3}
-  \end{center}
- \end{table}
-}
-
-% Nuevo comando para tablas pequeñas (menos de una página)
-% y ajustadas al ancho de la página (requiere \usepackage{tabularx})
-\newcommand{\tablaSmallAjustadaConPosicion}[5]{%
- \begin{table}[H]
-  \begin{center}
-   \rowcolors {2}{gray!35}{}
-   \begin{tabularx}{\textwidth}{#2}
     \toprule
     #4
     \midrule
     #5
     \bottomrule
-   \end{tabularx}
+   \end{tabular}
    \caption{#1}
    \label{tabla:#3}
   \end{center}
  \end{table}
 }
+
+%
+%Para el float H de tablaSmallSinColores
+\usepackage{float}
 
 %
 % Nuevo comando para tablas pequeñas (menos de una página).
@@ -272,6 +294,19 @@
   \end{center}
 }
 
+\newcommand{\nota}[1]{
+    \begin{center}
+        \fcolorbox{red}{white}{\textcolor{black}{
+            \begin{minipage}{0.915\linewidth}
+        	\textbf{\color{red}Importante}
+                \linebreak\linebreak
+                #1
+                \linebreak
+            \end{minipage}
+        }}
+    \end{center}
+}
+
 %
 % Nuevo comando para tablas grandes sin cabecera.
 \newcommand{\tablaSinCabecera}[5]{%
@@ -335,6 +370,7 @@
 
 
 
+
 \graphicspath{ {./img/} }
 
 % Capítulos
@@ -344,8 +380,8 @@
 	\setcounter{section}{0}
 	\setcounter{figure}{0}
 	\setcounter{table}{0}
-	\chapter*{\thechapter.\enskip #2}
-	\addcontentsline{toc}{chapter}{\thechapter.\enskip #2}
+	\chapter*{#2}
+	\addcontentsline{toc}{chapter}{#2}
 	\markboth{#2}{#2}
 }
 
@@ -354,6 +390,7 @@
 \renewcommand*\cftappendixname{\appendixname}
 
 \newcommand{\apendice}[1]{
+	%\renewcommand{\thechapter}{A}
 	\chapter{#1}
 }
 
@@ -369,7 +406,7 @@
   \null
   \thispagestyle{empty}
   % Cabecera ----------------
-  \noindent\includegraphics[width=\textwidth]{cabecera}\vspace{1cm}%
+\noindent\includegraphics[width=\textwidth]{cabecera}\vspace{1cm}%
   \vfill
   % Título proyecto y escudo informática ----------------
   \colorbox{cpardoBox}{%
@@ -381,6 +418,7 @@
       \end{center}
       \vspace{.2cm}
     \end{minipage}
+
   }%
   \hfill\begin{minipage}{.20\textwidth}
     \includegraphics[width=\textwidth]{escudoInfor}
@@ -392,19 +430,18 @@
     \noindent\LARGE
     Presentado por \@author{}\\ 
     en Universidad de Burgos --- \@date{}\\
-    Tutor: \@tutor{}\\
+    Tutores: \@tutor{}\\
   }%
   \end{center}%
   \null
   \cleardoublepage
-}
+  }
 \makeatother
 
-\newcommand{\nombre}{Mario Lopez Matamala} %%% cambio de comando
 
 % Datos de portada
-\title{Creación de chatbots en Amazon Web Services y Google Cloud}
-\author{\nombre}
+\title{Creación de chatbots en Amazon Web Services y Google Cloud. \\Documentación Técnica}
+\author{Mario Lopez Matamala}
 \tutor{Jose Manuel Aroca Fernandez}
 \date{\today}
 
@@ -412,59 +449,16 @@
 
 \maketitle
 
-\newpage\null\thispagestyle{empty}\newpage
+\cleardoublepage
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\thispagestyle{empty}
-
-\noindent\includegraphics[width=\textwidth]{cabecera}\vspace{1cm}
 
 
-
-\newpage\null\thispagestyle{empty}\newpage
 
 \frontmatter
 
-% Abstract en castellano
-\renewcommand*\abstractname{Resumen}
-\begin{abstract}
-Los chatbots, también conocidos como bots de charla o bots conversacionales, son aplicaciones de software que surgieron en el siglo pasado. Estos programas simulan una conversación con una persona real, proporcionando respuestas automáticas y previamente establecidas a un conjunto de entradas del usuario. A lo largo de los años, la tecnología de los chatbots ha evolucionado significativamente, desde simples scripts de respuesta hasta sistemas avanzados de inteligencia artificial capaces de comprender y generar lenguaje natural. Hoy en día, los chatbots son utilizados en una variedad de aplicaciones, desde servicios de atención al cliente hasta asistentes personales virtuales.
-
-Amazon Web Services (AWS) y Google Cloud Platform (GCP) son dos de los principales proveedores de servicios de computación en la nube que ofrecen una amplia gama de servicios para el desarrollo y despliegue de chatbots. AWS proporciona Amazon Lex y  Google Cloud ofrece Dialogflow, ambas son plataformas sencillas que facilita la creación de interfaces conversacionales, utilizando técnicas de procesamiento del lenguaje natural (NLP) y aprendizaje automático.
-
-El objetivo de este proyecto es explorar estos servicios, examinando sus productos y viendo sus diferencias. AWS y GCP disponen de multitud de servicios, algunos de los cuales son similares en funcionalidad, como los servicios de traducción de texto y detección de lenguaje, mientras que otros presentan enfoques distintos. 
-
-Además, el chatbot desarrollado en este proyecto será capaz de responder preguntas sobre cómo crearse a sí mismo. Este podrá guiar a los usuarios a través de los pasos necesarios para configurar y desplegarlo en la nube, utilizando tanto AWS como GCP, a la vez que se configurar el resto de servicios relevantes para su desarrollo. 
-
-La herramienta se encuentra disponible en: \\TODO
-
-\end{abstract}
-
-\renewcommand*\abstractname{Descriptores}
-\begin{abstract}
-Chatbots, Bots conversacionales, Inteligencia artificial, Procesamiento del lenguaje natural, Amazon Web Services, AWS, Google Cloud Platform, GCP, Amazon Lex, Dialogflow, Computación en la nube, Aprendizaje automático, Servicios de traducción de texto, Detección de lenguaje.
-\end{abstract}
-
-\clearpage
-
-% Abstract en inglés
-\renewcommand*\abstractname{Abstract}
-\begin{abstract}
-Chatbots, also known as conversational bots, are software applications that emerged in the last century. These programs simulate a conversation with a real person, providing automatic and pre-established responses to a set of user inputs. Over the years, chatbot technology has evolved significantly, from simple response scripts to advanced artificial intelligence systems capable of understanding and generating natural language. Today, chatbots are used in a variety of applications, from customer service to virtual personal assistants.
-
-Amazon Web Services (AWS) and Google Cloud Platform (GCP) are two of the main providers of cloud computing services that offer a wide range of services for the development and deployment of chatbots. AWS provides Amazon Lex and Google Cloud offers Dialogflow; both are user-friendly platforms that facilitate the creation of conversational interfaces using natural language processing (NLP) techniques and machine learning.
-
-The goal of this project is to explore these services by examining their products and identifying their differences. AWS and GCP offer a multitude of services, some of which are similar in functionality, such as text translation and language detection services, while others present different approaches.
-
-Additionally, the chatbot developed in this project will be able to answer questions about how to create itself. It will guide users through the necessary steps to configure and deploy it in the cloud, using both AWS and GCP, while also configuring the other relevant services for its development.
-
-The tool is available at: \\TODO
-\end{abstract}
-
-\renewcommand*\abstractname{Keywords}
-\begin{abstract}
-Chatbots, Conversational bots, Artificial intelligence, Natural language processing, Amazon Web Services, AWS, Google Cloud Platform, GCP, Amazon Lex, Dialogflow, Cloud computing, Machine learning, Text translation services, Language detection.
-\end{abstract}
 
 \clearpage
 
@@ -478,20 +472,22 @@ Chatbots, Conversational bots, Artificial intelligence, Natural language process
 \clearpage
 
 \listoftables
+
 \clearpage
 
 \mainmatter
-\include{./tex/1_introduccion}
-\include{./tex/2_objetivos}
-\include{./tex/3_conceptos_teoricos}
-\include{./tex/4_tecnicas_y_herramientas}
-\include{./tex/5_aspectos_relevantes}
-\include{./tex/6_trabajos_relacionados}
-\include{./tex/7_conclusiones}
 
+\appendix
+
+\include{./tex/A_Plan_proyecto}
+\include{./tex/B_Requisitos}
+\include{./tex/C_Diseno}
+\include{./tex/D_Manual_programador}
+\include{./tex/E_Manual_usuario}
+\include{./tex/F_Acronimos}
 
 \bibliographystyle{plain}
-\bibliography{bibliografia}
+\bibliography{bibliografiaAnexos}
 
 \newpage\null\thispagestyle{empty}
 

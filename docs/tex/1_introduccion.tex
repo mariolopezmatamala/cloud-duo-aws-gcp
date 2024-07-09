@@ -1,13 +1,18 @@
 \chapter{Introducción}
 
 % Texto introductorio
-En la era digital actual, las empresas están constantemente buscando formas de mejorar la eficiencia y la experiencia del cliente. Los chatbots han surgido como la herramienta esencial capaz de lograr sus objetivos. Desde su aparición en el siglo pasado, los chatbots han evolucionado significativamente, pasando de simples scripts de respuesta a sistemas avanzados de inteligencia artificial capaces de comprender y generar lenguaje natural, como el ofrecido por la empresa OpenAI.
+En la era digital actual, las empresas están constantemente buscando formas de mejorar la eficiencia y la experiencia del cliente. Los chatbots han surgido como la herramienta esencial capaz de lograr sus objetivos. Desde su aparición en el siglo pasado, los chatbots han evolucionado significativamente, pasando de simples scripts de respuesta a sistemas avanzados de inteligencia artificial capaces de comprender y generar lenguaje natural, como el ofrecido por la empresa OpenAI \citep{jurafsky2020speech}.
 
 Las empresas que implementan estas tecnologías no sólo tienen como objetivo mejorar la interacción con el cliente sino también optimizar los procesos internos y reducir los gastos operativos. Los chatbots se han utilizado en muchas industrias, incluida la atención al cliente, el comercio electrónico, la atención médica y muchas más.
- Según un estudio de McKinsey & Company, el uso de chatbots puede reducir los costos de atención al cliente en hasta un 30\%, al mismo tiempo que mejora la resolución de problemas en primera instancia en un 20\% (McKinsey, 2020).
+ Según un estudio de McKinsey \& Company, el uso de chatbots puede reducir los costos de atención al cliente en hasta un 30\%, al mismo tiempo que mejora la resolución de problemas en primera instancia en un 20\% \citep{online:McKinsey}.
 
- Siguiendo las recomendaciones de expertos en la industria, como las proporcionadas por Gartner, las empresas deben considerar varios factores al elegir una plataforma de chatbot, incluyendo la capacidad de integración, la escalabilidad y el soporte técnico (Gartner, 2022). 
- 
+Siguiendo las recomendaciones de expertos en la industria, como las proporcionadas por Gartner, las empresas deben considerar varios factores al elegir una plataforma de chatbot, incluyendo la capacidad de integración, la escalabilidad y el soporte técnico \citep{online:Gartner}. 
+
+El desarrollo y la implementación de chatbots avanzados también han sido impulsados por avances en el procesamiento del lenguaje natural (NLP) mediante herramientas como el Stanford CoreNLP y técnicas avanzadas en el reconocimiento de entidades nombradas \citep{manning2014stanford, ratinov2009design}. Estos avances permiten que los chatbots no solo respondan a consultas básicas, sino que también proporcionen respuestas contextualmente relevantes y complejas.
+
+En este contexto, el presente trabajo se enfoca en el desarrollo de dos chatbots utilizando los servicios en la nube de AWS y GCP. Este proyecto tiene como objetivo comparar la eficacia y eficiencia de las herramientas y servicios proporcionados por ambas plataformas para el desarrollo de chatbots, así como proporcionar una guía detallada y práctica para la implementación de chatbots en entornos empresariales utilizando tecnologías de computación en la nube. 
+
+El proyecto integra servicios avanzados como Amazon Lex, Lambda, S3, Textract, Comprehend y Translate en el caso de AWS, y Dialogflow, Cloud Functions y Cloud Storage en el caso de GCP. Esta integración permitirá evaluar las capacidades y limitaciones de cada plataforma en la creación de soluciones de inteligencia artificial conversacional 
 
 \section{Estructura de la memoria}\label{estructura-de-la-memoria}
 
@@ -32,7 +37,7 @@ La memoria sigue la siguiente estructura:
   \textbf{Aspectos relevantes del desarrollo:} exposición de aspectos
   destacables que tuvieron lugar durante la realización del proyecto.
 \item
-  \textbf{Trabajos relacionados:} estado del arte en las aplicaciones y sitios web de bolsa y finanzas.
+  \textbf{Trabajos relacionados:} Trabajos en los que se basó la realización del proyecto.
 \item
   \textbf{Conclusiones y líneas de trabajo futuras:} conclusiones
   obtenidas tras la realización del proyecto y posibilidades de mejora o
@@ -43,8 +48,29 @@ Junto a la memoria se proporcionan los siguientes anexos:
 \begin{itemize}
 \tightlist
 \item
-  \textbf{\\todo} \\todo
+  \textbf{Plan del proyecto software:} planificación temporal y estudio
+  de viabilidad del proyecto.
+\item
+  \textbf{Especificación de requisitos del software:} se describe la
+  fase de análisis; los objetivos generales, el catálogo de requisitos
+  del sistema y la especificación de requisitos funcionales y no
+  funcionales.
+\item
+  \textbf{Especificación de diseño:} se describe la fase de diseño; el
+  ámbito del software, el diseño de datos, el diseño procedimental y el
+  diseño arquitectónico.
+\item
+  \textbf{Manual del programador:} recoge los aspectos más relevantes
+  relacionados con el código fuente (estructura, compilación,
+  instalación, ejecución, pruebas, etc.).
+\item
+  \textbf{Manual de usuario:} guía de usuario para el correcto manejo de
+  la aplicación.
+\item 
+    \textbf{Acrónimos: }Índice de acrónimos.
+  
 \end{itemize}
+
 
 \section{Materiales adjuntos}\label{materiales-adjuntos}
 
@@ -52,16 +78,16 @@ Los materiales que se adjuntan con la memoria son:
 
 \begin{itemize}
 \item
-	\textbf{Anexos}: consultar \href{https://github.com/rmt0009alu/FAT/blob/main/docs/latex/anexos.pdf}{la documentación técnica}.
-
-\end{itemize}
-
-Además, los siguientes recursos están accesibles a través de internet:
-
-\begin{itemize}
+	\textbf{Anexos}: consultar \href{https://github.com/mariolopezmatamala/cloud-duo-aws-gcp/tree/main/docs}{la documentación técnica}.
 \item
-  \textbf{Repositorio}: visitar \href{}{GitHub}.
+	\textbf{Herramienta web}: Visitar \href{https://aws-gcp-chatbot-webapp.s3.amazonaws.com/index.html}{página web}.
+\item	
+	\textbf{Vídeo de presentación}: ver \href{https://universidaddeburgos-my.sharepoint.com/:v:/g/personal/mlm1015_alu_ubu_es/EZUBowfELs1ErHR5M7LZcmIBCe4Ju__J7FfReeBi433LWw?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=NeUESc}{presentación del TFG}.
+\item	
+	\textbf{Vídeo de demostración}: ver \href{https://universidaddeburgos-my.sharepoint.com/:v:/g/personal/mlm1015_alu_ubu_es/EUD9pZr3b3lEoQsfxsr902wBeDKFWj2YQOVRoM7n-X9zYw?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=7a64oD}{demostración funcional}.
 \end{itemize}
+
+Además, el repositorio del proyecto se puede encontrar en el siguiente enlace: \href{https://github.com/mariolopezmatamala/cloud-duo-aws-gcp}{Repositorio Github}
 
 
 

@@ -1,6 +1,4 @@
 \capitulo{5}{Aspectos relevantes del desarrollo del proyecto}
-Básicamente como he hecho las cosas, por que las he hecho y en que orden. Que me costó mas de mi aprendizaje, menos, por que fueron distintos, cuales son equivalentes y conceptos que no son lo mismo realmente. Documentar por qué configuro, que configuro, que fin tiene documentar la otra parte.
-
 En esta sección se muestra un resumen de los servicios utilizados a lo largo del proyecto en ambas plataformas, así como una descripción detallada de la configuración del entorno. 
 
 \section{Inicio del proyecto}\label{inicio-del-proyecto}
@@ -8,7 +6,9 @@ Este proyecto surge con el afán de conocer y comprender las plataformas de AWS 
 
 Inicialmente, consideramos configurar un chatbot simple utilizando OpenAI que pudiera entrenarse en base a los documentos de texto recibidos y responder preguntas derivadas desde esos documentos.  Sin embargo, encontramos varias limitaciones, como la incapacidad actual de modelos como ChatGPT para entrenarse directamente a partir de documentos proporcionados por el usuario en tiempo real y responder a preguntas específicas sobre esos documentos. 
 
-Finalmente, tras consultar con el Dr., decidimos explorar una arquitectura más compleja. Así fue como llegamos a evaluar y utilizar las plataformas de AWS y GCP, aprovechando los diversos servicios que ofrecen. Esto nos permitió diseñar y crear un chatbot personalizado, en el cual podemos restringir el flujo de conversación y controlar las respuestas.
+Finalmente, tras consultar con el tutor Jose Manuel, decidimos explorar una arquitectura más compleja. Así fue como llegamos a evaluar y utilizar las plataformas de AWS y GCP, aprovechando los diversos servicios que ofrecen. Esto nos permitió diseñar y crear un chatbot personalizado, en el cual podemos restringir el flujo de conversación y controlar las respuestas.
+
+Por otro lado, esta decisión se tomó con la intención de comprender como se realizan los chatbots de cero, entendiendo así lo que hay por debajo y de lo que están compuestos mucho de estos.
 
 \section{Metodologías}\label{Metodologías}
 Durante el desarrollo del proyecto se ha seguido una metodología ágil, \textit{Scrum}, concretamente. El  inconveniente más evidente de esta filosofía en un proyecto educativo es la falta de un equipo de personas que cubran los diferentes roles necesarios. Sin embargo, he intentado ponerme en el papel de cada componente del equipo, haciéndome preguntas constantemente sobre el tiempo disponible, el producto final requerido en cada sprint y qué esperaría un potencial cliente. Cada \textit{issue} se describe detalladamente, especificando el objetivo.  
@@ -16,16 +16,16 @@ Durante el desarrollo del proyecto se ha seguido una metodología ágil, \textit
 Estos son algunos de los procesos más relevantes que he seguido:
 
 \begin{itemize}
-\item Realización de iteraciones, \textit{sprints}, de forma constante. Los sprints han tenido una duración aproximada de unas dos semanas, aunque algunos se han incrementado debido a cambios en el objetivo final del proyecto y en la forma de actuar. Por ejemplo, en el \textit{sprints} 6, se cambió la lógica recoger las respuestas a las preguntas. Aquí he intentado realizar un esfuerzo extra en cuanto a lo esperable en las reuniones diarias y, aunque han sido discusiones conmígo mismo y con el tutor, el resultado ha sido satisfactorio. 
-\item Disposición de tareas, \textit{Issues}, en cada uno de los sprints, estos son tareas específicas que se deben completar dentro del marco temporal del sprint. Esto asegura que todas las actividades necesarias para avanzar en el proyecto estén identificadas y asignadas, facilitando un seguimiento efectivo. Además, cada commit se ha referenciado a su \textit{Issues} correspondiente. 
+\item Realización de iteraciones, \textit{sprints}, de forma constante. Los sprints han tenido una duración aproximada de unas dos semanas, aunque algunos se han incrementado debido a cambios en el objetivo final del proyecto y en la forma de actuar. Por ejemplo, en el \textit{sprints} 6, se cambió la lógica con la que las respuestas se recogían en base a las preguntas. Aquí he intentado realizar un esfuerzo extra en cuanto a lo esperable en las reuniones diarias y, aunque han sido discusiones conmígo mismo y con el tutor, el resultado ha sido satisfactorio. 
+\item Disposición de tareas, \textit{Issues}, en cada uno de los sprints. Estos son tareas específicas que se deben completar dentro del marco temporal del sprint. Esto asegura que todas las actividades necesarias para avanzar en el proyecto estén identificadas y asignadas, facilitando un seguimiento efectivo. Además, cada commit se ha referenciado a su \textit{Issues} correspondiente. 
     
 \end{itemize}
 
 \section{Extracción de la información}\label{Metodologías}
 
-La primera fase de este proyecto ha sido la de extraer información. Ha sido la más extensa y, aunque ha sido un proceso continuo que se ha llevado a cabo a lo largo de todo el proyecto entendiendo el funcionamiento de los sistemas que proporcionan, ha tenido lugar en el primer \textit{Sprint}.
+La primera fase de este proyecto consistió en extraer información. Ha sido la más extensa y, aunque ha sido un proceso continuo que se ha llevado a cabo a lo largo de todo el proyecto entendiendo el funcionamiento de los sistemas que proporcionan, ha tenido lugar en el primer \textit{Sprint}.
 
-Para esto, es necesario tener en cuenta varias bases de datos bibliográficas que ofrecen diversos recursos para los investigadores. Entre las más importantes se encuentran Google Scholar  y Crossref. En ellas he podido encontrar diferentes artículos científicos de proyectos sencillos utilizando los servicios, aunque ninguno era lo suficientemente complejo, me ha servido para entenderlos por encima. \\TODO insertar referencias.
+Para esto, es necesario tener en cuenta varias bases de datos bibliográficas que ofrecen diversos recursos para los investigadores. Entre las más importantes se encuentran Google Scholar  y Crossref. En ellas he podido encontrar diferentes artículos científicos de proyectos sencillos utilizando los servicios, aunque ninguno era lo suficientemente complejo, me ha servido para entenderlos lo suficiente como para empezar a trabajar por mi cuenta. 
 
 Sin embargo, donde más he podido obtener información ha sido en la documentación de ambas plataformas. Las dos proporcionan una gran cantidad de documentación para todos sus servicios, cubriendo desde conceptos básicos hasta detalles técnicos avanzados.
 
@@ -33,142 +33,152 @@ A pesar de la abundancia de información disponible en ambas plataformas, encont
 
 Por otro lado, la documentación de Google Cloud Platform, aunque igualmente completa y detallada, a veces se adentra en temas muy técnicos y específicos que no eran necesarios para mi proyecto. Esto hizo que tuviera que invertir más tiempo en filtrar la información y extraer solo lo más relevante para las necesidades del desarrollo del chatbot.
 
-
+\newpage
 \section{Amazon Web Services}\label{AWS}
 \imagen{AWS.png}{Ecosistema AWS. Fuente: elaboración propia}{1}
 
 \subsection{Qué elementos contienen}\label{elementos-aws}
 \begin{enumerate}
 
-    \item Amazon S3 (Simple Storage Service).
+    \item \underline{Amazon S3 (Simple Storage Service).}
     
     Es un servicio de almacenamiento de objetos que ofrece escalabilidad, disponibilidad de datos y seguridad. Los objetos se almacenan en contenedores llamados buckets. 
     
     En mi caso, almaceno los archivos de entrada y los resultados del procesamiento. Hay dos buckets: uno para los archivos a procesar \textbf{(archivos-a-procesar)} y otro para los resultados procesados \textbf{(resultados-textract)}.
-    \item AWS Lambda.
+    
+    \item \underline{AWS Lambda.}
 
-    AWS Lambda es un servicio de computación serverless que permite ejecutar código en respuesta a eventos sin tener que aprovisionar ni gestionar servidores. Se paga solo por el tiempo de computación consumido. Son tres las funciones que utilizo:
+    AWS Lambda es un servicio de computación serverless que permite ejecutar código en respuesta a eventos sin tener que aprovisionar ni gestionar servidores. Se paga solo por el tiempo de computación consumido.
+    
+    Son tres las funciones que utilizo:
     \begin{itemize}
         \item \textbf{invokeTextract:} Esta función invoca Amazon Textract para comenzar la extracción de texto de los documentos almacenados en S3 obteniendo el ID de la extracción.
         \item \textbf{ResultTextract:} Esta función procesa las notificaciones de finalización de Amazon Textract, obteniendo el texto extraído para luego manejar los resultados, almacenándolos en S3.
         \item \textbf{LexIntegration:} Esta función integra el chatbot con Amazon Lex y maneja la lógica adicional necesaria, interactuando con DynamoDB.
     \end{itemize}
 
-    \item Amazon Textract.
+    \item \underline{Amazon Textract.}
 
     Amazon Textract es un servicio que utiliza machine learning para extraer texto y datos de documentos escaneados automáticamente. Puede leer archivos escaneados, identificar campos de formulario y tablas.
 
     Este servicio es invocado por las funciones invokeTextract y ResultTextract para obtener el texto extraído de archivos pdf en formato txt. De esta forma es posible su posterior uso en el bot.
     
-    \item Amazon SNS (Simple Notification Service)
+    \item \underline{Amazon SNS (Simple Notification Service).}
 
-    Amazon SNS es un servicio de mensajería que coordina y gestiona la entrega de mensajes a suscriptores en diferentes plataformas y dispositivos.  Envía una notificación cuando Amazon Textract completa el procesamiento de un documento, activando la función Lambda ResultTextract que extrae y procesa los resultados.
+    Amazon SNS es un servicio de mensajería que coordina y gestiona la entrega de mensajes a suscriptores en diferentes plataformas y dispositivos.  Este envía una notificación cuando Amazon Textract completa el procesamiento de un documento, activando la función Lambda ResultTextract que extrae y procesa los resultados.
     
-    \item Amazon Comprehend
+    \item \underline{Amazon Comprehend}
 
-    Amazon Comprehend es un servicio de procesamiento del lenguaje natural (NLP) que utiliza machine learning para encontrar insights y relaciones en el texto. Ofrece capacidades como análisis de sentimientos, detección de entidades, análisis de lenguaje y clasificación de texto. Es usado por la función ResultTextract para detectar el idioma que está escrito el texto. 
-    \item Amazon Translate
+    Amazon Comprehend es un servicio de procesamiento del lenguaje natural que utiliza machine learning para encontrar insights y relaciones en el texto. Ofrece capacidades como análisis de sentimientos, detección de entidades, análisis de lenguaje y clasificación de texto. Este es usado por la función ResultTextract para detectar el idioma en el que está escrito el texto.
+    
+    \item \underline{Amazon Translate}
 
-    Amazon Translate es un servicio de traducción automática que proporciona traducciones rápidas y de alta calidad entre diferentes idiomas. Utiliza técnicas de machine learning para traducir el texto.
+    Amazon Translate es un servicio de traducción automática que proporciona traducciones rápidas y de alta calidad entre diferentes idiomas. También utiliza técnicas de machine learning para traducir el texto.
 
     Este traduce el texto a español en caso de que el idioma detectado por Comprehend sea otro distinto al español, permitiendo así que el bot reciba documentos en cualquier idioma.
     
-    \item Amazon Lex
+    \item \underline{Amazon Lex}
 
-    Amazon Lex es un servicio para construir interfaces de conversación utilizando voz y texto. Utiliza técnicas avanzadas de comprensión del lenguaje natural (NLU)\\TODO poner referencia. para entender la intención del usuario y gestionar diálogos de manera dinámica.
+    Amazon Lex es un servicio para construir interfaces de conversación utilizando voz y texto. Utiliza técnicas avanzadas de comprensión del lenguaje natural para entender la intención del usuario y gestionar diálogos de manera dinámica, siguiendo un flujo de conversación entre una persona real y la inteligencia artifical.
 
-    Este desarrolla el chatbot que interactúa con los usuarios, obteniendo las preguntas que realizan y utilizando los datos procesados y almacenados en DynamoDB para proporcionar las respuestas. 
-    \item Amazon DynamoDB
+    Este da vida al chatbot que interactúa con los usuarios, obteniendo las preguntas que realizan y utilizando los datos procesados y almacenados en DynamoDB para proporcionar las respuestas. 
+    \item \underline{Amazon DynamoDB}
 
-    Amazon DynamoDB es un servicio de base de datos NoSQL que ofrece rendimiento rápido y predecible con escalabilidad automática. En él se encuentra la base de datos con todas las respuestas a las preguntas del usuario. Dispone de tres campos: Nombre del intent reconocido por Lex (IntentName), Texto de la pregunta (Question), Texto de la respuesta (Response).
+    Amazon DynamoDB es un servicio de base de datos NoSQL que ofrece escalabilidad automática. En él se encuentra la base de datos con todas las respuestas a las preguntas del usuario. Dispone de tres campos: Nombre del intent reconocido por Lex (IntentName), Texto de la pregunta (Question), Texto de la respuesta (Response). 
+    
+    También guarda el nombre del documento con la información correspondiente a los pasos de creación del bot, en este caso el atributo Question contiene una clave con el nombre del paso y subpaso. \textit{Funcionamiento}.
+
+    \item \underline{Amazon IAM}
+
+    Amazon IAM es un servicio que permite gestionar el acceso a los servicios y recursos de AWS de forma segura. Con IAM, se pueden crear y gestionar usuarios y grupos, y utilizar permisos para permitir su acceso a los recursos de AWS. En este proyecto, IAM es fundamental para asignar los permisos necesarios a las funciones Lambda y que así puedan interactuar con los otros servicios. 
+
+    Se crean tres roles IAM: \textbf{AWS\_PDF\_Textract\_Lex\_Role} que se usa para las funciones \textit{invokeTextract y ResultTextract}; \textbf{AWS\_Lambda\_LexIntegration} usado por la función \textit{LexIntegration}; \textbf{textract\_sns} que se encarga de la notificación SNS.
+    
+    
 \end{enumerate}
+
 \subsection{Funcionamiento}\label{funcionamiento-aws}
 El flujo de trabajo para el desarrollo del chatbot se compone de varias etapas, son dos las secciones que pueden actuar independientemente y que se pueden diferenciar de la siguiente forma:  
 
 \begin{itemize}
-    \item Sección 1: Extracción y Procesamiento de Documentos: Esta se encarga únicamente de la tarea de extracción del texto.
-    \item Sección 2: Interacción del Chatbot: No es necesario que haya texto extraído dentro del bucket para funcionar, ya que actúa independientemente mediante la base de datos. 
+    \item \textbf{Sección 1: Extracción y Procesamiento de Documentos:}
+    Esta sección se encarga únicamente de la tarea de extracción del texto.
+    \item \textbf{Sección 2: Interacción del Chatbot:} Esta sección interactúa con el chabot, reconociendo intents y proporcionando respuestas a las preguntas del usuario. No es necesario que haya texto extraído dentro del bucket para funcionar, ya que actúa independientemente mediante la base de datos. 
 \end{itemize}
 
-A continuación se detalla cada paso del proceso:
+Cabe destacar que todo este proceso es asíncrono, de forma que se permite cargar y extraer el texto de varios archivos a la vez o tener varios bots funcionando simultáneamente, el sistema es capaz de escalar automáticamente en base a las necesidades. 
+
+A continuación se detalla cada paso del proceso. Los pasos de cada sección corresponden con los enumerados en la figura \ref{fig:AWS.png} \textit{Ecosistema AWS}.
 
 \subsubsection{Sección 1: Extracción y Procesamiento de Documentos}
 
 \begin{enumerate}
-    \item \textbf{Carga de Archivos en S3}. 
+    \item \underline{Carga de Archivos en S3}. 
     
     Dentro del bucket y la carpeta \textit{resultados-a-procesar/} se cargan los archivos con extensión .pdf para extraerles el texto y poder trabajar con ellos. Nada más cargarse el archivo pdf, desencadena la función invokeTextract. 
+
+    En la carpeta se puede cargar todo tipo de archivos, pero solamente se iniciará el proceso de extracción si es un archivo con extensión .pdf. De lo contrario, no desencadenará a la función lambda.
     
-    \item \textbf{Desencadenación de invokeTextract}. 
+    \item \underline{Desencadenación de invokeTextract}. 
     
     Una vez que ha recibido la notificación por parte del bucket S3, esta función se activa. Recibe el nombre del bucket y el archivo que se ha cargado. A continuación, utiliza la función de textract start\_document\_text\_detection para obtener el ID del proceso que inicia la extracción. 
 
-    \item \textbf{Notificación SNS}
+    \item \underline{Notificación SNS}
+    
     Tras obtener el ID, utiliza el servicio de SNS para notificar a la función ResultTextract que puede continuar con la extracción del texto. Esto activa a la función que recibirá el ID por parte de SNS.
 
     Los siguientes pasos serán realizados por la función ResultTextract y pueden ser agrupados como el procesamiento de los datos
 
-    \item \textbf{Desencadenación de ResultTextract}.
+    \item \underline{Desencadenación de ResultTextract}.
 
-    Esta función lambda recibe la notificación con el ID, comienza la extracción del texto. \\TODO introducir diagrama de flujo y explicar mejor
+    Esta función lambda recibe la notificación con el ID y comienza la extracción del texto. La forma en la que maneja Textract el texto para extraer admite que se cargue texto ordenado mediante dos columnas, algo típico en ensayos científicos. Por eso se ha implementado una funcionalidad que detecta y agrupa el texto correctamente en caso de que tengo dos columnas. 
 
-    \item \textbf{Traducción del texto}
+    En la figura \ref{fig:DiagramaFlujoAWS.png} \textit{Diagrama de flujo ResultTextract} se muestra el procesamiento de los datos de la función.
+    
+    \imagen{DiagramaFlujoAWS.png}{Diagrama de flujo función lambda ResultTextract. Fuente: elaboración propia}{0.7}
+
+    \item \underline{Traducción del texto}
+    
     La función ResultTextract utiliza el servicio Amazon Comprehend para detectar el idioma del texto extraído. En caso de que el idioma sea distinto al español, llama al servicio Amazon Translate para traducirlo, por lo que este paso es opcional. 
 
-    \item \textbf{Carga de los datos}
-    Una vez la función ResultTextract ha terminado toda la tarea de preprocesamiento de datos, carga el archivo en formato txt con el texto extraído dentro del bucket y la carpeta resultados-textract/.
+    \item \underline{Carga de los datos}
+    
+    Una vez la función ResultTextract ha terminado toda la tarea de procesamiento de texto, carga el archivo en formato txt con el texto extraído dentro del bucket y la carpeta resultados-textract/.
     
 \end{enumerate}
 
-\subsubsection{Sección 2: Interacción del Chatbot}
+\subsubsection{Sección 2: Interacción del Chatbot}\label{sec:lexintegration}
 \begin{enumerate}[7.]
-    \item \textbf{LexIntegration}
-    Esta función es la que maneja toda la sección 2. Cada vez que Amazon Lex detecta un intent, llama a la función lambda quien determina como seguir. \\TODO continuar explicando
+    \item \underline{LexIntegration} 
+    
+    Esta función es la que maneja toda la sección 2. Cada vez que Amazon Lex detecta un intent, llama a la función lambda quien determina como seguir. Los intents que se han añadido son de tres tipos:
+    \begin{itemize}
+    \tightlist
+        \item \textbf{Intents de pasos de creación del chatbot}:
+
+        Estos intents se encargan del proceso de creación del chatbot, explicando al usuario todos los pasos. Estos son: \textit{StartTutorial} que se encarga del comienzo del tutorial recibiendo enunciados como "comenzar tutorial"; \textit{NextStep} que permite avanzar entre los pasos del tutorial; \textit{gotostep} que incluye la posibilidad de avanzar a un paso especifico del tutorial.
+
+        \item \textbf{Intents de respuesta a preguntas de los servicios}:
+
+        Estos intents responden preguntas básicas sobre los servicios utilizados en el proceso de creación del chatbot. Los intents son del estilo de \textit{CreacionRolIAM, CreacionBucketS3, CrearFuncionLambda} y explica conceptos básicos como \textit{"Qué es un rol IAM"}.
+
+        \item \textbf{Intents de presentación}:
+
+        Estos intents responden preguntas destinadas a la presentación del proyecto, gestionando intents como \textit{ideaTrabajo o Objetivos}. 
+    \end{itemize}
+
+    La función lambda \textit{LexIntegration} actúa en base al intent que recibe. En cualquiera de los casos, llama a la base de datos de dynamoDB para obtener respuesta a la pregunta del usuario. 
+
+    En caso de que haya recibido un intent del paso de creación del chatbot, obtendrá de la base de datos el nombre archivo .txt donde se encuentra la información del paso que tiene que devolver al usuario. Despues de esto, se dirije al bucket a buscar el archivo para terminar por devolver la respuesta al usuario. A lo largo de la sesión, se guardan atributos de sesión con la información del paso actual donde se encuentra el usuario con el fin de poder tener un orden del flujo de creación del chatbot. 
+    
+    Por ejemplo, si el usuario confirma que ha entendido el paso en el proceso de creación, la función actualiza su registro y en la siguiente interacción devolverá la información correspondiente al siguiente paso. Este atributo también se actualiza en caso de que el usuario quiera saltar a un paso en concreto. 
+
+    En los otros dos casos, la función lambda se dirige también a la base de datos para obtener la respuesta. Dado que en la base de datos los intents están agrupados, la función lambda obtiene todos los intents asociados, analiza su \textit{Question} comparandola con la que ha introducido el usuario y obtiene la respuesta en base a la \textit{Question} que más se asemeje. 
+
+    
     
 \end{enumerate}
 
-\subsection{Montaje}\label{montaje-aws}
-En esta sección, se detallará cómo se ha montado todo el entorno para el desarrollo del chatbot utilizando los servicios de AWS.
-
-\subsubsection{Creación del Rol IAM}
-Para comenzar, es necesario configurar un Rol IAM en AWS. Este rol define los permisos que las funciones Lambda necesitarán para interactuar con otros servicios de AWS.
-
-Primero, busca el servicio Identity and Access Management (IAM) y crea un nuevo rol en la sección Roles. Yo le he puesto el nombre “AWS\_PDF\_Textract\_Lex\_Role”. En el Paso 1, configura el tipo de entidad de confianza como Servicio de AWS, con el caso de uso Lambda. En el Paso 2, asigna los siguientes permisos: \texttt{AmazonS3FullAccess}, \texttt{AmazonTextractFullAccess}, \texttt{AWSLambdaExecute}, \texttt{AWSLambdaSNSFullAccess}, \texttt{ComprehendFullAccess} y \texttt{TranslateFullAccess}. En el Paso 3, elige un nombre para el rol y revisa el resumen de configuración. Finalmente, crea el rol.
-
-Repite estos pasos para crear otro rol con los siguientes permisos, en mi caso lo llamé “AWS\_Lambda\_LexIntegration”: \texttt{AmazonDynamoDBFullAccess}, \texttt{AmazonS3FullAccess}, \texttt{AWSLambdaBasicExecutionRole} y \texttt{AmazonLexFullAccess}.
-
-\subsubsection{Creación de un Bucket S3 con dos Carpetas}
-El siguiente paso es crear un bucket en Amazon S3 para almacenar los archivos que se procesarán y los resultados. Busca el servicio Amazon S3 y crea un nuevo bucket, eligiendo un nombre y dejando todas las configuraciones por defecto para mayor seguridad. Dentro de este bucket, crea dos carpetas: una para cargar los PDF y otra para almacenar el texto extraído de los PDF en formato TXT.
-
-\subsubsection{Crear un SNS}
-Para la mensajería y las notificaciones, utiliza Amazon Simple Notification Service (SNS). Busca el servicio SNS y crea un nuevo tópico, asignándole un nombre y seleccionando el tipo estándar. Deja todas las configuraciones por defecto y crea el tópico.
-
-\subsubsection{Creación de las Funciones Lambda}
-En este paso, se crearán tres funciones Lambda que interactuarán con S3, Textract y Lex.
-
-Primero, busca el servicio AWS Lambda y crea una nueva función desde cero. Asigna un nombre a la función y selecciona Python como el lenguaje de tiempo de ejecución, con arquitectura x86\_64. En la sección de permisos, añade el rol IAM “AWS\_PDF\_Textract\_Lex\_Role”. Después de crear la función, ve a la configuración básica y ajusta la memoria a 1GiB, el almacenamiento efímero y el tiempo de espera a 15 minutos. Configura un desencadenador (trigger) para el bucket S3 que hemos creado, especificando el prefijo de la carpeta donde se cargarán los PDF y el sufijo \texttt{.pdf}.
-
-La segunda función Lambda será similar a la primera, pero el desencadenador será el servicio SNS configurado anteriormente. Utiliza el mismo rol IAM que la primera función.
-
-La tercera función Lambda no tendrá un desencadenador y puedes usar la misma configuración básica de las funciones anteriores, exceptuando el rol, que será el “AWS\_Lambda\_LexIntegration”.
-
-\subsubsection{Creación de la Base de Datos}
-Ahora vamos a configurar la base de datos donde el chatbot buscará respuestas a las preguntas. Busca el servicio Amazon DynamoDB y crea una nueva tabla. Introduce el nombre de la tabla y establece la clave de partición como \texttt{IntentName}. Esto permitirá recuperar el conjunto de preguntas asociadas a cada intent y proporcionar respuestas precisas. Deja el resto de las configuraciones por defecto y crea la tabla.
-
-Después, crea una función Lambda para cargar los datos en la tabla DynamoDB. El código necesario para esta función se puede encontrar en un enlace de GitHub especificado. Una vez creada la función, realiza una prueba para asegurarte de que los datos se cargan correctamente.
-
-\subsubsection{Creación del Bot}
-Para configurar el chatbot, accede al servicio AWS Lex y crea un nuevo bot desde cero. Asigna un nombre al bot y deja la configuración de permisos predeterminada, ya que las funciones Lambda previamente creadas serán las que interactúen con los servicios necesarios.
-
-Crea una lista de intents y añade ejemplos de enunciados para cada uno. Configura los hooks de código utilizando las funciones Lambda creadas anteriormente. Los intents iniciales que debes crear incluyen \texttt{StartTutorial}, \texttt{RepeatStep}, \texttt{NextStep} y \texttt{GoToStep}. Añade frases de entrenamiento como “crear un chatbot” o “siguiente paso”.
-
-A continuación, configura los intents correspondientes al banco de preguntas. Asegúrate de utilizar los nombres de intents que coincidan con los utilizados en la función Lambda que carga los datos en DynamoDB, para garantizar la correcta detección y respuesta. Añade también las frases de entrenamiento similares a las preguntas que has introducido en la base de datos.
-
-\subsubsection{Implementación del Chatbot}
-\\TODO
-
-
-\subsection{Costos y escalabilidad}\label{costos-aws}
 
 
 \section{Google Cloud}\label{GCP}
@@ -176,48 +186,50 @@ A continuación, configura los intents correspondientes al banco de preguntas. A
 \subsection{Qué elementos contienen}\label{elementos-gcp}
 \begin{enumerate}
 
-    \item Cloud Storage
+    \item \underline{Cloud Storage}
     
-    Cloud Storage es un servicio de almacenamiento de objetos de Google Cloud que ofrece escalabilidad, disponibilidad de datos y seguridad. Los objetos se almacenan en contenedores llamados buckets. 
+    Cloud Storage es un servicio de almacenamiento de objetos de Google Cloud que ofrece escalabilidad, disponibilidad de datos y seguridad. Al igual que en AWS, los objetos se almacenan en contenedores llamados buckets. 
     
     En mi caso, almaceno los archivos de entrada y los resultados del procesamiento. Hay dos buckets: uno para los archivos a procesar \textbf{(archivos-a-procesar)} y otro para los resultados procesados \textbf{(resultados-extraídos)}.
     
-    \item Cloud Functions
+    \item \underline{Cloud Functions}
     
-    Cloud Functions es un servicio de computación sin servidor que permite ejecutar código en respuesta a eventos sin tener que aprovisionar ni gestionar servidores. Solo se paga por el tiempo de computación consumido. Son tres las funciones que utilizo:
+    Cloud Functions es un servicio de computación sin servidor que permite ejecutar código en respuesta a eventos sin tener que aprovisionar ni gestionar servidores. Solo se paga por el tiempo de computación consumido. 
+    
+    Son tres las funciones que utilizo:
     \begin{itemize}
         \item \textbf{documentAI-extract-text:} Esta función invoca Cloud Document AI para comenzar la extracción de texto de los documentos almacenados en Cloud Storage obteniendo el ID de la extracción.
         \item \textbf{analyze-text:} Esta función procesa las notificaciones de finalización de Cloud Document AI, obteniendo el texto extraído para luego manejar los resultados, almacenándolos en Cloud Storage.
         \item \textbf{DialogFlow-integration:} Esta función integra el chatbot con DialogFlow y maneja la lógica adicional necesaria, interactuando con Firestore.
     \end{itemize}
     
-    \item Cloud Document AI
+    \item \underline{Cloud Document AI}
     
     Cloud Document AI es un servicio que utiliza machine learning para extraer texto y datos de documentos escaneados automáticamente. Puede leer archivos escaneados, identificar campos de formulario y tablas.
     
     Este servicio es invocado por las funciones documentAI-extract-text y analyze-text para obtener el texto extraído de archivos PDF en formato TXT, permitiendo su posterior uso en el bot.
     
-    \item Cloud Tasks
+    \item \underline{Cloud Tasks}
     
     Cloud Tasks es un servicio de gestión de colas que coordina y gestiona la entrega de tareas a servicios de back-end de manera asíncrona. Envía una notificación cuando Cloud Document AI completa el procesamiento de un documento, activando la función analyze-text que extrae y procesa los resultados.
     
-    \item Cloud Language
+    \item \underline{Cloud Language}
     
-    Cloud Language es un servicio de procesamiento del lenguaje natural (NLP) que utiliza machine learning para encontrar insights y relaciones en el texto. Ofrece capacidades como análisis de sentimientos, detección de entidades, análisis de lenguaje y clasificación de texto. Es utilizado por la función analyze-text para detectar el idioma en el que está escrito el texto.
+    Cloud Language es un servicio de procesamiento del lenguaje natural que utiliza machine learning para encontrar insights y relaciones en el texto. Ofrece capacidades como análisis de sentimientos, detección de entidades, análisis de lenguaje y clasificación de texto. Es utilizado por la función analyze-text para detectar el idioma en el que está escrito el texto.
     
-    \item Cloud Translate
+    \item \underline{Cloud Translate}
     
     Cloud Translate es un servicio de traducción automática que proporciona traducciones rápidas y de alta calidad entre diferentes idiomas. Utiliza técnicas de machine learning para traducir el texto.
     
     Este servicio traduce el texto al español en caso de que el idioma detectado por Cloud Language sea otro distinto al español, permitiendo así que el bot reciba documentos en cualquier idioma.
     
-    \item Cloud DialogFlow
+    \item \underline{Cloud DialogFlow}
     
-    Cloud DialogFlow es un servicio para construir interfaces de conversación utilizando voz y texto. Utiliza técnicas avanzadas de comprensión del lenguaje natural (NLU) para entender la intención del usuario y gestionar diálogos de manera dinámica.
+    Cloud DialogFlow es un servicio para construir interfaces de conversación utilizando voz y texto. Utiliza técnicas avanzadas de comprensión del lenguaje natural para entender la intención del usuario y gestionar diálogos de manera dinámica.
     
-    Este servicio desarrolla el chatbot que interactúa con los usuarios, obteniendo las preguntas que realizan y utilizando los datos procesados y almacenados en Firestore para proporcionar las respuestas.
+    Este servicio da lugar al chatbot que interactúa con los usuarios, obteniendo las preguntas que realizan y utilizando los datos procesados y almacenados en Firestore para proporcionar las respuestas.
     
-    \item Cloud Firestore
+    \item \underline{Cloud Firestore}
     
     Cloud Firestore es una base de datos NoSQL que ofrece rendimiento rápido y predecible con escalabilidad automática. En él se encuentra la base de datos con todas las respuestas a las preguntas del usuario. Dispone de tres campos: Nombre del intent reconocido por DialogFlow (IntentName), Texto de la pregunta (Question), Texto de la respuesta (Response).
     
@@ -227,93 +239,192 @@ A continuación, configura los intents correspondientes al banco de preguntas. A
 El flujo de trabajo para el desarrollo del chatbot se compone de varias etapas, son dos las secciones que pueden actuar independientemente y que se pueden diferenciar de la siguiente forma:  
 
 \begin{itemize}
-    \item Sección 1: Extracción y Procesamiento de Documentos: Esta se encarga únicamente de la tarea de extracción del texto.
-    \item Sección 2: Interacción del Chatbot: No es necesario que haya texto extraído dentro del bucket para funcionar, ya que actúa independientemente mediante la base de datos. 
+    \item \textbf{Sección 1: Extracción y Procesamiento de Documentos:} Esta sección se encarga únicamente de la tarea de extracción del texto.
+    \item \textbf{Sección 2: Interacción del Chatbot:} Esta sección interactúa con el chabot, reconociendo intents y proporcionando respuestas a las preguntas del usuario. No es necesario que haya texto extraído dentro del bucket para funcionar, ya que actúa independientemente mediante la base de datos. 
 \end{itemize}
-
-A continuación se detalla cada paso del proceso:
+Al igual que en AWS, este proceso es asíncrono, de forma que se permite cargar y extraer el texto de varios archivos a la vez o tener varios bots funcionando simultáneamente. Los pasos de cada sección corresponden con los enumerados en la figura \ref{fig:GCP.png}:
 
 \subsubsection{Sección 1: Extracción y Procesamiento de Documentos}
 
 \begin{enumerate}
-    \item \textbf{Carga de Archivos en Cloud Storage}. 
+    \item \underline{Carga de Archivos en Cloud Storage}. 
     
     Dentro del bucket y la carpeta \textit{archivos-a-procesar/} se cargan los archivos con extensión .pdf para extraerles el texto y poder trabajar con ellos. Nada más cargarse el archivo pdf, desencadena la función documentAI-extract-text. 
-    
-    \item \textbf{Desencadenación de documentAI-extract-text}. 
-    
-    Una vez que ha recibido la notificación por parte del bucket Cloud Storage, esta función se activa. Recibe el nombre del bucket y el archivo que se ha cargado. A continuación, utiliza el servicio Cloud Document AI para iniciar la extracción de texto y obtener el ID del proceso.
-    
-    \item \textbf{Notificación Cloud Tasks}
-    
-    Tras obtener el ID, utiliza el servicio de Cloud Tasks para notificar a la función analyze-text que puede continuar con la extracción del texto. Esto activa la función que recibirá el ID por parte de Cloud Tasks.
 
-    Los siguientes pasos serán realizados por la función analyze-text y pueden ser agrupados como el procesamiento de los datos
+    Dentro de esta carpeta se pueden cargar todo tipo de archivos. Google cloud desencadenará a la función independientemente del archivo, será la función lambda quién decida empezar o no el proceso de extracción en base al tipo de archivo. A diferencia de AWS, no es posible limitar la desencadenación de la función según el tipo de archivo ni la carpeta donde se introduce, ya que notifica por todos los archivos que se introduzcan en el bucket. Esta notificación sucede cuando se carga el archivo con el texto extraído, pero se descarta por la función lambda.
+    
+    \item \underline{Desencadenación de documentAI-extract-text}. 
+    
+    Una vez que ha recibido la notificación por parte del bucket Cloud Storage, esta función se activa. Recibe el nombre del bucket y el archivo que se ha cargado. A continuación, utiliza el servicio Cloud Document AI para iniciar la extracción de texto. Posteriormente guarda el archivo con el texto extraído dentro del bucket. 
 
-    \item \textbf{Desencadenación de analyze-text}.
+    A diferencia de AWS, no es posible obtener el ID de un proceso para continuar la extracción mediante otra función lambda. Sin embargo, al utilizar métodos asíncronos, no es inconveniente para poder tener varios archivos simultáneamente realizando el proceso de extracción. 
+    
+    \item \underline{Notificación Cloud Tasks}
+    
+    Tras cargar el archivo con el texto extraído, utiliza el servicio de Cloud Tasks para notificar a la función analyze-text que puede continuar con el proceso del analisis de texto. Esto activa la función que recibirá el ID del objeto con el texto extraído por parte de Cloud Tasks.
 
-    Esta función recibe la notificación con el ID, comienza la extracción del texto utilizando Cloud Document AI.
+    \item \underline{Desencadenación de analyze-text}.
 
-    \item \textbf{Traducción del texto}
+    Esta función recibe la notificación con el ID del objeto, obtiene el texto del bucket y comienza su análisis. A diferencia de AWS, no permite realizar una correcta extracción en ensayos con textos en columnas.
+
+    \item \underline{Traducción del texto}
     
     La función analyze-text utiliza el servicio Cloud Language para detectar el idioma del texto extraído. En caso de que el idioma sea distinto al español, llama al servicio Cloud Translate para traducirlo, por lo que este paso es opcional.
 
-    \item \textbf{Carga de los datos}
+    \item \underline{Carga de los datos}
     
-    Una vez la función analyze-text ha terminado toda la tarea de preprocesamiento de datos, carga el archivo en formato txt con el texto extraído dentro del bucket y la carpeta \textit{resultados-extraídos/}.
+    Una vez la función analyze-text ha terminado la tarea de procesamiento del text, carga el archivo en formato txt con el texto extraído dentro del bucket y la carpeta \textit{resultados-extraídos/}.
     
 \end{enumerate}
 
 \subsubsection{Sección 2: Interacción del Chatbot}
 
 \begin{enumerate}[7.]
-    \item \textbf{DialogFlow-integration}
+    \item \underline{DialogFlow-integration}
     
     Esta función es la que maneja toda la sección 2. Cada vez que Cloud DialogFlow detecta un intent, llama a la función Cloud Functions quien determina cómo seguir. La función interactúa con Cloud Firestore para obtener las respuestas almacenadas en la base de datos y las proporciona al usuario a través del chatbot. 
 
-    Esta integración permite que el chatbot responda preguntas utilizando la información preprocesada y almacenada, asegurando que las respuestas sean precisas y relevantes, independientemente de si hay texto recién extraído en el bucket.
+    El funcionamiento es exactamente el mismo explicado en la sección de AWS \ref{sec:lexintegration} 
 
 \end{enumerate}
 
-\subsection{Montaje}\label{montaje-gcp}
 
-Para comenzar a trabajar con los servicios de Google Cloud y crear el entorno del chatbot, es necesario seguir una serie de pasos detallados a continuación.
-
-\subsubsection{Creación del Proyecto}
-Lo primero que se debe hacer es crear un proyecto nuevo en la consola de Google Cloud. Al acceder a la consola, se presenta la opción de crear un nuevo proyecto. Es importante guardar el ID del proyecto, ya que puede ser necesario más adelante para configurar el entorno virtual.
-
-\subsubsection{Paso 1: Creación del Storage}
-El primer paso es crear un bucket en el servicio Cloud Storage. Se debe configurar el nombre del bucket y la región deseada, dejando el resto de las configuraciones en su estado predeterminado. Una vez creado el bucket, se deben crear dos carpetas dentro de él: una para los archivos PDF que se desean procesar y otra para almacenar los archivos TXT con el texto extraído.
-
-\subsubsection{Paso 2: Creación de Document AI}
-A continuación, se configura el servicio Document AI. Al acceder a este servicio, se solicita habilitar la API correspondiente. Después, se procede a crear un procesador, eligiendo el tipo Document OCR para realizar la extracción de texto. Se le asigna un nombre y una región al procesador. Es recomendable mantener la misma región para todos los servicios relacionados con el proyecto. Una vez configurado, se puede probar subiendo un documento de prueba para verificar su correcto funcionamiento.
-
-\subsubsection{Paso 3: Creación de las Cloud Functions}
-En este paso, se crean tres funciones Cloud Functions, cada una con un propósito específico: extraer texto, procesar el texto y gestionar la interacción con DialogFlow.
-
-La primera función se encarga de la extracción de texto. Se selecciona el entorno de 1ª generación por su estabilidad. Se configura el nombre y la región, y se establece como activador Cloud Storage con tipo de evento "finalized". Se ajustan los recursos de memoria, CPU y tiempo de espera para asegurar la finalización de la tarea. También se asigna la cuenta de servicio del proyecto.
-
-Antes de configurar las otras funciones, se crea una cola en el servicio Cloud Tasks para gestionar las notificaciones. Se habilita la API de Cloud Tasks y se configura el nombre y la región de la cola.
-
-La segunda función se activa mediante una notificación HTTP enviada por la primera función. Esta función realiza la tarea de procesar el texto, para lo cual necesita habilitar las API de Cloud Natural Language y Cloud Translate.
-
-La tercera función se encarga de la integración con el bot de DialogFlow. Esta función se configura de manera similar a las anteriores, pero con el propósito específico de gestionar la interacción con DialogFlow.
-
-\subsubsection{Paso 4: Creación de la Base de Datos}
-Para almacenar el banco de preguntas y respuestas del chatbot, se utiliza Firestore. Se selecciona el modo Nativo y se asigna un nombre, dejando el resto de configuraciones por defecto. Una vez creada la base de datos, se añaden dos colecciones: una para el banco de preguntas y respuestas (\texttt{chatbotresponses}) y otra para los pasos de creación del chatbot (\texttt{chatbotsteps}).
-
-\subsubsection{Paso 5: Configuración de DialogFlow ES}
-Se utiliza DialogFlow ES (Essentials) para configurar el bot. En la consola de DialogFlow, se crean los intents necesarios, añadiendo frases de entrenamiento y habilitando la opción "Enable webhook call for this intent" en el fulfilment.
-
-Los intents iniciales incluyen \texttt{StartTutorial}, \texttt{RepeatStep}, \texttt{NextStep} y \texttt{GoToStep}, con frases de entrenamiento como “crear un chatbot” o “siguiente paso”. También se configuran los intents correspondientes al banco de preguntas, utilizando los nombres de intents que recibe la Cloud Function y añadiendo frases de entrenamiento similares a las preguntas almacenadas en la base de datos.
-
-\subsubsection{Paso 6: Implementación del Chatbot}
-Finalmente, se implementa el chatbot en una página web. En la consola de DialogFlow, se navega a la configuración del bot y se añade una descripción. En el apartado de “Integrations” -> “Web demo”, se copia el código \texttt{<iframe>} y se inserta en la página web.
-
-\subsection{Costos y escalabilidad}\label{costos-gcp}
-
-
-\section{Creación de la aplicación web}\label{webapp}
 
 \section{Comparativa de servicios}\label{comparativa}
-Problemas encontrados, soluciones, comparativa de respuestas?, cual me resultó mas facil, diferencias, Experiencia del Usuario (UX)
+En este capítulo, se comparan las características, funcionalidades y experiencias obtenidas durante el desarrollo de los chatbots.
+
+\begin{itemize}
+    \item \textbf{Detección de Intenciones:} Durante las pruebas, se observó que ambos chatbots podían proporcionar respuestas adecuadas a las mismas preguntas. Sin embargo, se notaron diferencias en la detección de intenciones. En AWS, la detección de intents requería una mayor cantidad de ejemplos debido a que el servicio de AWS Lex necesitaba una mayor cantidad de datos de entrenamiento para mejorar su capacidad de comprensión. Dialogflow demostró una mayor eficacia en la detección de intents con menos ejemplos.
+    \item \textbf{Problemas con Cloud Functions:} Una limitación importante encontrada en GCP fue el manejo de errores en Cloud Functions. Si ocurría un error durante la compilación de una función, el código se perdía y desaparecía del entorno, lo que obligaba a volver a cargarlo. Esto presentó un desafío ya que, sobre todo en los primeros casos, se perdía el código ya escrito, siendo necesario el volver a escribirlo. 
+    \item \textbf{Gestión de Roles y Permisos:} En términos de gestión de roles y permisos, AWS y GCP utilizan enfoques diferentes. Los servicios de AWS interactúan entre ellos estableciendo permisos mediante IAM, mientras que GCP utiliza la activación de APIs dentro de un mismo proyecto para manejar estos permisos. 
+    \item \textbf{Costes de los Servicios:} En cuanto a los costos, ambos servicios demostraron ser bastante económicos. Tanto AWS como GCP ofrecen modelos de precios basados en el uso, lo que permite a las empresas escalar sus operaciones sin incurrir en costos fijos significativos. En ambos casos, los costos operativos fueron mínimos, lo que hace que estos servicios sean accesibles incluso para pequeñas y medianas empresas.   
+\end{itemize}
+En la siguiente tabala se introduce una comparativa de los costos por servicio en AWs y GCP \ref{tab:costes_aws} y \ref{tab:costes_gcp}:
+
+				\begin{table}[h]
+					\centering
+					\begin{tabularx}
+						{\textwidth}{@{}lX@{}} \toprule \textbf{Servicio GCP} & \textbf{Coste
+						por Solicitud/Unidad/Almacenamiento} \\ \midrule Cloud Functions &
+						\$0.40 USD por millón de solicitudes (primeros 2 millones gratis) \\
+						Document AI & \$1.50 USD por 1000 páginas \\ Cloud Storage &
+						\begin{tabular}[t]{@{}l@{}}
+							• \$0.023 USD por GB al mes             \\
+							• \$0.005 USD por cada 1000 operaciones
+						\end{tabular}
+						\\ Cloud Tasks & Primer millón gratis al mes \\ Natural Language API
+						& \$0.0020 USD por unidad (1000 caracteres) \\ Translation API & \$20.00
+						USD por millón de caracteres \\ Dialogflow & \$0.002 USD por solicitud
+						de API \\ Firestore &
+						\begin{tabular}[t]{@{}l@{}}
+							• \$0.18 USD por GB al mes                          \\
+							• \$0.02 USD por 100,000 operaciones de lectura     \\
+							• \$0.18 USD por 100,000 operaciones de escritura   \\
+							• \$0.02 USD por 100,000 operaciones de eliminación
+						\end{tabular}
+						\\ \bottomrule
+					\end{tabularx}
+					\caption{Costes por Solicitud/Unidad/Almacenamiento de los servicios
+					GCP utilizados en el proyecto}
+					\label{tab:costes_gcp}
+				\end{table}
+
+                    \begin{table}[h]
+					\centering
+					\begin{tabularx}
+						{\textwidth}{@{}lX@{}} \toprule \textbf{Servicio AWS} & \textbf{Coste
+						por Solicitud/Unidad/Almacenamiento} \\ \midrule AWS Lambda & \$0.20
+						USD por millón de solicitudes \\ Amazon S3 &
+						\begin{tabular}[t]{@{}l@{}}
+							• \$0.00045 USD por 1000 solicitudes             \\
+							• \$0.023 USD por GB para los primeros 50 TB/mes
+						\end{tabular}
+						\\ Amazon Textract & \$1.50 USD por 1000 páginas \\ Amazon SNS & \$0.60
+						USD por millón de notificaciones \\ Amazon Comprehend & \$0.0001 USD
+						por unidad (100 caracteres) \\ Amazon Lex & \$0.75 USD por 1000 solicitudes
+						\\ Amazon DynamoDB &
+						\begin{tabular}[t]{@{}l@{}}
+							• \$1.25 USD por millón de escrituras \\
+							• \$0.25 USD por millón de lecturas
+						\end{tabular}
+						\\ Amazon Translate & \$15.00 USD por millón de caracteres \\
+						\bottomrule
+					\end{tabularx}
+					\caption{Costes por Solicitud/Unidad/Almacenamiento de los servicios
+					AWS utilizados en el proyecto}
+					\label{tab:costes_aws}
+				\end{table}
+
+
+
+A través de la siguiente tabla \ref{tab:comparativa}, se puede ver la comparativa de servicios que proporciona GCP y que se ha utilizado a lo largo del proyecto \citep{google2024servicecomparison}.
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+\textbf{Servicio} & \textbf{AWS} & \textbf{GCP} \\
+\midrule
+\textbf{Almacenamiento} & Amazon S3 & Cloud Storage \\
+\textbf{Computación Serverless} & Amazon Lambda & Cloud Functions \\
+\textbf{Base de Datos NoSQL} & Amazon DynamoDB & Cloud Firestore \\
+\textbf{Procesamiento de Texto} & Amazon Textract & Cloud Document AI \\
+\textbf{Notificaciones} & Amazon SNS & Cloud Tasks \\
+\textbf{Traducción} & Amazon Translate & Cloud Translation \\
+\textbf{NLP} & Amazon Comprehend & Cloud Natural Language \\
+\textbf{Bots} & Amazon Lex & Dialogflow \\
+\bottomrule
+\end{tabularx}
+\caption{Comparativa de Servicios AWS y GCP}
+\label{tab:comparativa}
+\end{table}
+
+
+\section{Despliegue de los Chatbots}
+Para el despliegue de los chatbots se ha habilitado una página pública donde cualquier persona pueda acceder y probarlos. Está alojada mediante el servicio de AWS S3. Se valoró la opción de usar otro servicio llamado AWS Amplify que también permite alojar páginas web \cite{awsamplify}. AWS S3 también permite actuar como lugar de alojamiento estático para sitios web, por lo que cualquiera de las dos opciones es válida.
+
+Me encontré con un problema a la hora de desplegar el chatbot de AWS. Según indica la documentación, es necesario crear una nueva versión desde la versión borrador así como un \textit{alias} asignado a la versión para poder desplegarlo. Sin embargo, no he podido de ninguna de las tres formas que he intentado:
+
+La primera ha sido mediante una interfaz gráfica para el bot que proporciona AWS \cite{awsblog}. La forma de desplegarlo indica que es muy sencilla, ya que esta misma crea una pila y gestiona los accesos para el bot. A la hora de probarlo cuando ya la aplicación lo ha desplegado, el bot no se conectaba con mis servicios. He podido leer en foros de GitHub que se podía deber a la región donde está desarrollado el entorno \cite{githubissue}, por lo que procedí a cambiar todo el entorno de la región de Londres a la de Norte de Virginia, tampoco obtuve un resultado satisfactorio.
+
+La otra opción fue configurar yo mismo a mano los pasos que se realizan en la opción anterior. Esto implica incluir los SDK de AWS y Cognito, el servicio que se encarga de gestionar los roles de acceso para usuarios ajenos, pudiendo así hacer uso del bot únicamente para lectura por cualquier usuario. También desarrollé el código JavaScript para hacer la llamada al servidor de AWS. No fue posible tampoco conectarse con el bot.
+
+La última opción fue utilizar el servicio de Kommunicate \cite{kommunicate}, el cual es un producto que permite integrar en aplicaciones web y móviles multitud de servicios de manera sencilla. Dispone de una prueba gratuita de 30 días. Para integrarlo, es necesario crear un rol IAM para usuarios, con permiso de acceso a Amazon Lex. Este rol proporciona un ID y una clave secreta que necesitará Kommunicate para acceder al bot. Por último, pide seleccionar el alias del bot. Un alias en AWS Lex es una etiqueta que apunta a una versión específica del bot.
+
+En esta última parte descubrí el problema: el alias del bot. Volví a seleccionar sin éxito el Alias que apuntaba a la nueva versión. Sin embargo, al seleccionar el Alias borrador con el que he estado trabajando, pude por fin hacer uso del bot sin problema alguno. Seleccionar el Alias borrador es algo que no era posible en ninguna de las otras dos opciones.
+
+Una vez el bot desplegado, Kommunicate proporciona un código script para introducirlo en la página web, pudiendo así integrarse en la parte inferior derecha de la pantalla como un desplegable\cite{cumulusvideo}.
+
+En el caso de GCP, el proceso fue mucho más sencillo, pudiendo hacer estos mismos pasos desde la consola de dialogflow- en el apartado de integraciones -para obtener el código script y también así alojarlo en la página web.
+
+\section{Análisis de Costos y Beneficios}
+El uso de chatbots puede representar un ahorro significativo en costos para las empresas. A continuación, se detallan los principales aspectos que contribuyen a este ahorro:
+
+\subsubsection{Reducción de Costos Operativos}
+La implementación de chatbots reduce la necesidad de personal para tareas repetitivas de atención al cliente. Esto permite a las empresas disminuir sus costos operativos y redistribuir recursos humanos hacia tareas de mayor valor agregado. De acuerdo con un informe de IBM, los chatbots pueden reducir los costos de atención al cliente hasta en un 30\% \cite{ibm2020chatbots}.
+
+\subsubsection{Disponibilidad 24/7}
+A diferencia de los empleados humanos, los chatbots pueden operar las 24 horas del día, los 7 días de la semana. Esto mejora la disponibilidad del servicio y reduce la necesidad de turnos nocturnos o extras, generando un ahorro adicional.
+
+\subsubsection{Escalabilidad}
+Los chatbots permiten una fácil escalabilidad en función del volumen de interacciones con los clientes. Las empresas pueden ajustar su capacidad de respuesta sin necesidad de incurrir en costos adicionales de contratación nuevo personal.
+
+\subsubsection{Costos de Infraestructura}
+Utilizar servicios en la nube como AWS y Google Cloud reduce la necesidad de invertir en infraestructura física, mantenimiento y actualización de hardware. Estos servicios ofrecen modelos de pago por uso, lo que permite a las empresas adaptar sus gastos según la demanda real. De esta forma, la infrastructura real no se ve desaprovechada en momentos con poca demanda ni insuficiente en momentos con mucha demanda. 
+
+\subsubsection{Comparativa de Costos}
+Inicialmente, el desarrollo e implementación de chatbots puede representar una inversión significativa para las empresas. Sin embargo, con el tiempo, se observa un considerable ahorro en mano de obra y costos operativos. De acuerdo con un informe de McKinsey Global Institute, la automatización basada en inteligencia artificial podría liberar hasta el 20\% del tiempo de trabajo en empleos de conocimiento, lo que equivale a \$5 billones en costos laborales a nivel mundial en 2020 \cite{mckinsey2020automation}.
+
+\subsubsection{Mantenimiento Predictivo}
+La inteligencia artificial también puede ayudar a predecir y prevenir fallos en maquinaria y equipos, lo que reduce los costos de mantenimiento. Según un informe de Deloitte, el mantenimiento predictivo basado en AI puede reducir los costos de mantenimiento en un 10\% y aumentar la vida útil de los activos en un 20\% \cite{deloitte2020predictive}.
+
+\subsubsection{Casos de Éxito}
+\begin{itemize}
+    \item \textbf{Bank of America}: La implementación de chatbots basados en AI ha permitido reducir los costos de atención al cliente en más de \$100 millones al año \cite{bofa2020chatbots}.
+    \item \textbf{Sephora}: La empresa de cosméticos y maquillaje implementó un chatbot para interactuar con clientes y ofrecer recomendaciones personalizadas, resultando en un aumento del 11\% en la compra de pedidos, reduciendo los pasos necesarios para reservar una cita y multiplicando por 5 las ventas \cite{sephora2020chatbot}.
+    \item \textbf{KLM Royal Dutch Airlines}: KLM utilizó un chatbot para manejar hasta el 50\% de las consultas de los clientes, reduciendo significativamente los costos operativos y aumentando la satisfacción del cliente \cite{klm2020chatbot}.
+    \item \textbf{Domino's Pizza}: Implementó un chatbot para facilitar los pedidos, reduciendo el tiempo promedio de pedido en un 30\%, aumentando así la eficiencia en otro 30\%. Este nuevo bot ahora maneja el 70\% de las consultas. Por otro lado, los costos operativos relacionados con atención al cliente se redujeron un 20\%\cite{dominos2020chatbot}.
+\end{itemize}
+
+
+

@@ -1,7 +1,34 @@
 \capitulo{7}{Conclusiones y Líneas de trabajo futuras}
 
 \section{Conclusiones}
+A lo largo de este proyecto, se ha llevado a cabo el desarrollo de dos chatbots utilizando los servicios en la nube de AWS y GCP. Estos chatbots integran una variedad de servicios avanzados como Amazon Lex, Lambda, S3, Textract, Comprehend, Translate, y DynamoDB en el caso de AWS, y Dialogflow, Cloud Functions, Cloud Storage, y otros servicios en el caso de GCP.
 
+Por otro lado, se ha creado una aplicación web de acceso abierto donde poder desplegar los chatbots, permitiendo que cualquier usuario pueda acceder y utilizarlos.
+
+Durante el desarrollo de este proyecto, se ha adquirido un profundo conocimiento sobre la arquitectura de microservicios, la integración de múltiples servicios en la nube, y las mejores prácticas para el desarrollo y despliegue de chatbots. Además, se han explorado diversos servicios y técnicas como el NLP, el análisis y extracción de texto, la traducción automática, y la orquestación de tareas. Esta última siendo muy importante dentro de este ámbito dada la necesidad de coordinar y gestionar múltiples tareas o servicios que deben trabajar juntos para completar un flujo de trabajo complejo, controlando el orden en que se ejecutan estas tareas, manejando las dependencias entre ellas y asegurando que los datos necesarios estén disponibles en el momento preciso.
+
+Finalmente, frente a las dificultades encontradas, hay que expresar agradecimiento por el respaldo del tutor. Sin su apoyo y orientación, la realización de este proyecto no habría sido posible en las mismas condiciones de éxito y profundidad alcanzadas.
 
 \section{Líneas de trabajo futuras} 
 
+En esta sección se proponen posibles direcciones para continuar avanzando en la comprensión del tema en cuestión y en su aplicación práctica.
+
+\begin{enumerate}
+    \item \underline{Creación de Nuevos Intents}
+
+    Una de las expansiones más efectivas sería la creación de nuevos intents en los chatbots. Estos nuevos intents permitirían abarcar un mayor número de preguntas y respuestas. Por ejemplo, se pueden añadir intents específicos para un mayor tipo de preguntas, consultas técnicas y preguntas contextuales que requieren respuestas detalladas basadas en otros datos. El abanico de respuestas a distintas preguntas es infinito.
+
+    \item \underline{Integración de un Mayor Número de Servicios}
+
+    Servicios como Amazon Rekognition para análisis de imágenes, Amazon Polly para convertir texto en voz, y AWS Glue para la integración y preparación de datos podrían incorporarse para ofrecer funcionalidades más complejas. Por ejemplo, un chatbot que no solo responde preguntas textuales, sino que también puede analizar y responder a partir de imágenes enviadas por los usuarios. El equivalente en en GCP sería Vision AI, text-to-speech y Dataplex.
+
+    \item \underline{Mejora de la Lógica en Funciones Lambda}
+
+    Actualmente la lógica de las funciones implica sacar la información de los pasos de creación del bot desde varios documentos. Se podría complejizar la lógica de estas funciones para que se pudiera extraer desde un documento todos y cada uno de los pasos. 
+
+    \item \underline{Implementación de Aprendizaje Automático}
+
+    La incorporación de modelos de aprendizaje automático avanzados podría mejorar la capacidad del chatbot para entender y responder preguntas de manera más precisa. Utilizar servicios como Amazon SageMaker o google Vertex AI para entrenar y desplegar modelos personalizados de ML podría permitir al chatbot aprender de las interacciones pasadas.
+  
+    
+\end{enumerate}

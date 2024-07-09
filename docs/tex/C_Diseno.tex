@@ -1,0 +1,101 @@
+\apendice{Especificación de diseño}
+
+\section{Introducción}
+El objetivo principal de la especificación de diseño es proporcionar una guía clara y completa para el desarrollo del chatbot, estableciendo una base sólida sobre la cual los desarrolladores puedan implementar el sistema. Este informe servirá como referencia y documentación para futuras etapas del proyecto y posibles mejoras o expansiones.
+
+En esta sección se describirán y analizarán en detalle los diferentes aspectos del diseño, desde la estructura y organización de los datos hasta los procedimientos y algoritmos que permiten su funcionamiento adecuado. Por último, se profundizará en el diseño arquitectónico, que define la distribución de los componentes y la interacción entre ellos
+
+\section{Diseño de datos}
+Para empezar, se detallarán como se organizan los datos en la aplicación. 
+
+\subsection{Base de datos}
+En el proyecto se utiliza una base de datos NoSQL para almacenar y gestionar la multitud de respuestas a las preguntas de los usuarios que interactúan con los chatbots. . En el entorno de AWS, se emplea Amazon DynamoDB, mientras que en Google Cloud se utiliza Firestore.
+
+El término NoSQL se refiere a un conjunto de tecnologías de bases de datos diseñadas para gestionar datos de forma distintas a los modelos tradicionales. A diferencia de las bases de datos SQL, que utilizan un esquema rígido y un lenguaje de consulta estructurado, estas bases de datos NoSQL ofrecen una mayor flexibilidad al permitir la definición dinámica de esquemas. Para ello, cada uno de los servicios proporcionan métodos con los que poder recuperar o introducir datos.
+
+El funcionamiento de firestore es algo complejo, organizando las bases de datos mediante colecciones dentro de una única tabla. Cada colección sería lo correspondiente a una o varias tablas del estilo traidcional. A su vez, dentro de cada colección se encuentran los documentos, que equivale a las filas de la tabla donde dentro de cada documento se encuentran los campos. Los documentos por defecto obtienen un ID aleatorio, y cada documento puede tener distintos campos a pesar de estar dentro de una misma colección. Esta es la peculiaridad de las bases de datos noSQL: La flexibilidad.
+
+DynamoDB permite definir tablas con claves de partición para poder recuperar grupos de datos, así como de ordenación para poder ordenar los datos dentro de su grupo. Además, permite organizar los datos en tablas, lo que se asemeja a un estilo un poco más tradicional. A diferencia de GCP, no permite tanta flexibilidad de datos dentro de una misma tabla, ya que te obliga a definir como mínimo el mismo tipo de clave de partición y ordenación para todos los datos.
+
+\subsubsection{Firestore}
+En firestore son dos las tablas:
+\begin{enumerate}
+    \item ChatbotResponses. Maneja las respuestas a las preguntas.
+    \begin{itemize}
+        \item \texttt{IntentName}: campo de tipo \texttt{string} que guarda el nombre del intent que detectaría el bot para ser invocado.
+        \item \texttt{Question}: campo de tipo \texttt{string} que almacena la posible pregunta.
+        \item \texttt{email}: campo de tipo \texttt{string} que almacena la respuesta a la posible pregunta.
+    \end{itemize}
+
+    \item ChatbotSteps. Guarda información del nombre del documento con la información de los pasos a seguir.
+    \begin{itemize}
+        \item \texttt{IntentName}: campo de tipo \texttt{string} que guarda el nombre del intent que detectaría el bot para ser invocado.
+        \item \texttt{Question}: campo de tipo \texttt{string} que almacena el paso.
+        \item \texttt{email}: campo de tipo \texttt{string} que almacena el nombre del documento correspondiente al paso donde se encuentra toda la información.
+    \end{itemize}
+
+\end{enumerate}
+
+\imagen{Firestore_1.png}{Diseño de bases de datos NoSQL para respuestas Firestore. Fuente: elaboración propia}{0.5}
+
+\imagen{Firestore_2.png}{Diseño de bases de datos NoSQL para pasos Firestore. Fuente: elaboración propia}{0.5}
+
+\subsubsection{DynamoDB}
+En DynamoDB se ha utilizado una única tabla donde se guarda la información de las preguntas y de los pasos:
+\begin{itemize}
+        \item \texttt{IntentName}: campo de tipo \texttt{string} que guarda el nombre del intent que detectaría el bot para ser invocado. Además, es clave de partición.
+        \item \texttt{Question/steps}: campo de tipo \texttt{string} que almacena la posible pregunta o el paso. Además, es clave de ordenación.
+        \item \texttt{email}: campo de tipo \texttt{string} que almacena la respuesta a la posible pregunta o el nombre del documento.
+\end{itemize}
+\imagen{DynamoDB.png}{Diseño de bases de datos NoSQL DynamoDB. Fuente: elaboración propia}{0.5}
+
+\section{Diseño procedimental}
+
+Todo el diseño procedimental se dividido en dos partes, tanto para AWS como GCP:
+\begin{itemize}
+    \item Secuencia desde que se sube un archivo PDF hasta que se ha extraído el texto. \ref{fig:AWS_secuencia_extraccion}, \ref{fig:GCP_secuencia_extraccion}
+    \item Secuencia donde el usuario interactúa con el chatbot. \ref{fig:AWS_secuencia_bot}, \ref{fig:GCP_secuencia_bot}
+\end{itemize}
+
+\imagen{AWS_secuencia_extraccion}{Diagrama de secuencia para la extracción de texto AWS. Fuente: elaboración propia}{1}
+
+\imagen{GCP_secuencia_extraccion}{Diagrama de secuencia para la extracción de texto GCP. Fuente: elaboración propia}{1}
+
+\imagen{AWS_secuencia_bot}{Diagrama de secuencia para el bot AWS. Fuente: elaboración propia}{1}
+
+\imagen{GCP_secuencia_bot}{Diagrama de secuencia para el bot GCP. Fuente: elaboración propia}{1}
+
+
+
+\section{Diseño arquitectónico}
+
+El diseño arquitectónico puede describirse mediante la arquitectura de microservicios basada en la nube. Este tipo de arquitectura permite descomponer el sistema en pequeños servicios independientes que pueden desarrollarse, desplegarse y escalarse de manera autónoma. 
+
+La arquitectura general se puede dividir en las siguientes capas y componentes, los cuales se comunican entre sí para proporcionar la funcionalidad completa del chatbot:
+
+\begin{enumerate}
+    \item \textbf{Capa de Almacenamiento de Datos:}
+    \begin{itemize}
+        \item \textbf{AWS}: Utiliza Amazon S3 y DynamoDB.
+        \item \textbf{Google Cloud}: Utiliza Google Cloud Storage y Firestore.
+    \end{itemize}
+    
+    \item \textbf{Capa de Procesamiento y Análisis de Datos:}
+    \begin{itemize}
+        \item \textbf{AWS}: Utiliza AWS Lambda, Amazon Textract, Amazon Comprehend y Amazon Translate.
+        \item \textbf{Google Cloud}: Utiliza Cloud Functions, Document AI, Cloud Language y Cloud Translate.
+    \end{itemize}
+    
+    \item \textbf{Capa de Notificación y Orquestación:}
+    \begin{itemize}
+        \item \textbf{AWS}: Utiliza Amazon SNS para la notificación de eventos.
+        \item \textbf{Google Cloud}: Utiliza Cloud Tasks para la notficación de eventos.
+    \end{itemize}
+    
+    \item \textbf{Capa de Interacción con el Usuario:}
+    \begin{itemize}
+        \item \textbf{AWS}: Utiliza Amazon Lex para la implementación del chatbot.
+        \item \textbf{Google Cloud}: Utiliza Dialogflow para la implementación del chatbot.
+    \end{itemize}
+\end{enumerate}
+
